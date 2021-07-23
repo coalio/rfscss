@@ -5,3 +5,4 @@ CMakeFiles
 Makefile
 libsrc.a
 .vscode
+tests/*

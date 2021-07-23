@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include <sstream>
 #include "parser.h"
 #include "file.h"
@@ -32,17 +33,14 @@ int Parser::check_char(char c) {
     }
 }
 
-struct State * Parser::parse_input(
+void Parser::parse_input(
+    std::shared_ptr<State> state,
     std::string file_path,
     std::string workspace,
     std::vector<char> input 
 ) {
-    // Initialize state
-    struct State * state;
-    
     for (auto c : input) {
-        std::cout;
-        // If current position is above 1, then set the previous character
+        // If current position is above 0, then set the previous character
         // to the current character
         if (state->curr_pos > 0) {
             state->last_char = state->curr_char;
@@ -56,64 +54,75 @@ struct State * Parser::parse_input(
         // Set the current character
         state->curr_char = c;
 
-        // Check if is_comment is true
-        if (state->is_comment) {
-            // If the current character is a newline, set is_comment to false
-            if (check == 6 && !state->is_multiline_comment) {
-                state->is_comment = false;
-            }
-
-            // If the current character is a forward slash, set hold comment to true
-            if (check == 4) {
-                state->hold_comment = true;
-            }
-
-            // If the current character is an asterisk and we are in a multiline comment,
-            // set hold comment to true
-            if (check == 5 && state->is_multiline_comment) {
-                state->hold_comment = true;
-            }
-        }
-
         // If the character is a newline, increment current line number
         if (check == 6) {
             state->curr_line++;
         }
 
-        // Check if capturing is false
-        if (!state->capturing) {
-            // If the character is a forward slash, set hold comment to true
-            if (check == 4 && !state->hold_comment) {
+        // Check if is_comment is true
+        if (state->is_comment) {
+            std::cout << "Current character is " << c << std::endl;
+            std::cout << "Is multiline comment set to " << state->is_multiline_comment << std::endl;
+            // If the character is an forward slash, we are in hold comment mode
+            // and the last character was an asterisk, set is_comment multiline
+            // to false
+            if (check == 4 && state->hold_comment && state->last_char == '*') {
+                state->is_comment = false;
+                state->is_multiline_comment = false;
+            } else if (state->hold_comment) {
+                // Comment marker didn't complete
+                std::cout << "Didnt drop comment because " << state->last_char << c << std::endl;
+                state->hold_comment = false;
+            }
+
+            // If the current character is a newline and we are not in a multiline comment,
+            // set is_comment to false
+            if (check == 6 && !state->is_multiline_comment) {
+                state->is_comment = false;
+            }
+
+            // If the current character is an asterisk and we are in a multiline comment,
+            // set hold comment to true
+            if (check == 5 && state->is_multiline_comment) {
+                std::cout << "Multiline holding because of " << c << std::endl;
                 state->hold_comment = true;
-                continue;
             }
 
             // If the character is an asterisk and we are in a comment,
             // set hold comment to true
             if (check == 5 && state->is_comment && !state->hold_comment) {
+                std::cout << "Possibly dropping comment" << std::endl;
                 state->hold_comment = true;
-                continue;
             }
+        }
 
+        
+        if (!state->is_comment) {
             // If the character is an asterisk, we are in hold comment mode
             // and the last character was a forward slash, set is_comment multiline
             // to true
             if (check == 5 && state->hold_comment && state->last_char == '/') {
                 state->is_comment = true;
                 state->is_multiline_comment = true;
-                continue;
-            }
-
-            // If the character is a forward slash, we are in hold comment mode
-            // and the last character was a forward slash, set is_comment to true
-            if (check == 4 && state->hold_comment && state->last_char == '/') {
+            } else  if (check == 4 && state->hold_comment && state->last_char == '/') {
+                // If the character is a forward slash, we are in hold comment mode
+                // and the last character was a forward slash, set is_comment to true
                 state->is_comment = true;
-                state->is_multiline_comment = true;
-                continue;
+            } else {
+                // Comment marker didn't complete
+                state->hold_comment = false;
             }
+        }
+        
+        // If the character is a forward slash, set hold comment to true
+        if (check == 4 && !state->hold_comment) {
+            state->hold_comment = true;
+        }
 
+        // Check if capturing is false, except for comments
+        if (!state->capturing && !state->hold_comment) {
             // If the character is a dot, add the identifier to the identifiers vector
-            if (check == 0 && !state->is_comment) {
+            if (check == 0) {
                 state->identifiers.push_back(std::string());
                 // Assign this identifier an id and push it to the identifiers_id vector
                 state->identifier_ids.push_back(state->identifiers.size() - 1);
@@ -127,7 +136,7 @@ struct State * Parser::parse_input(
             }
 
             // If the character is an opening brace, capture all the characters until the closing brace
-            if (check == 1 && !state->is_comment) {
+            if (check == 1) {
                 state->capturing = true;
                 // Set getting identifier to false to denote that we are now getting the content
                 state->getting_identifier = false;
@@ -140,15 +149,11 @@ struct State * Parser::parse_input(
 
             // Check if getting_identifier is true
             // If its true, add the character to the last string of the identifiers vector
-            if (state->getting_identifier && !state->is_comment) {
+            if (state->getting_identifier) {
+                std::cout << "Pushing identifier" << state->identifiers.back() << std::endl;
                 state->identifiers.back() += c;
             }
-
-            // If we are in hold comment, set hold comment to false
-            if (state->hold_comment) {
-                state->hold_comment = false;
-            }
-        } else {
+        } else if (state->capturing) {
             // If the character is an opening brace, increment level by one
             if (check == 1 && !state->is_comment) {
                 state->levels++;
@@ -170,16 +175,13 @@ struct State * Parser::parse_input(
         }
     }
     
-    // Print state levels
-    std::cout << state->levels;
-
     // If state->levels is not 0, the program did not parse correctly
     // (i.e. there is a closing brace without an opening brace or vice versa)
     if (state->levels != 0) {
         std::cout << "rfScss - Unable to refactor file: " << file_path << std::endl; 
         std::cout << "rfScss - Unbalanced braces in";
-        // Print the last identifier in scss class format
-        // (Of course, the last identifier is not necessarily the last one in the file)
+        // (Of course, the last identifier is not necessarily the last one in the file,
+        // but rather the last one that was successfully parsed)
         std::cout << " ."  << state->identifiers[state->identifiers.size() - 1] 
                 << " | " << file_path << " [ line: ";
         // Print last identifier line number
@@ -191,9 +193,9 @@ struct State * Parser::parse_input(
         // Set the state to error
         state->error = "Unbalanced braces";
 
-        return state;
+        return;
     }
 
     // Return a pointer to the state
-    return state;
+    return;
 }

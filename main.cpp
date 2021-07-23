@@ -3,12 +3,16 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <sys/stat.h>
 #include "src/file.h"
 #include "src/state.h"
 #include "src/parser.h"
+#include "src/utils.h"
 
 int main(int argc, char* argv[])
 {
+    umask(0);
+    
     std::string file_path = argv[1];
     std::string file_name = file_path;
     std::string workspace = file_path;
@@ -31,8 +35,6 @@ int main(int argc, char* argv[])
         file_name = file_name.substr(delim_pos + 1);
     }
 
-    // Create a new parser instance
-    Parser * parser;
     // Open the file
     std::vector<char> input = File::read(file_path);
     // Check if input is empty
@@ -40,18 +42,19 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    // Create a new state instance
-    struct State * state = new State();
+    std::shared_ptr<State> state(new State());
+    std::unique_ptr<Parser> parser(new Parser());
 
     // Parse the file
-    state = parser->parse_input(file_path, workspace, input);
+    parser->parse_input(state, file_path, workspace, input);
 
     // Write the refactored output
-
     // Create a .scss file for every identifier
     for (int i = 0; i < state->identifiers.size(); i++) {
         // Create a folder using the identifier as name
         std::string folder_name = state->identifiers[i];
+        // Trim the folder_name
+        folder_name = Utils::trim(folder_name);
         std::string folder_path = workspace + "/" + folder_name;
         std::string content = state->content[i];
         File::place_in(folder_path, folder_name, content);

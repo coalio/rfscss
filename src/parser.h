@@ -4,7 +4,8 @@
 class Parser {
 public:
     int check_char(char c);
-    struct State * parse_input(
+    void parse_input(
+        std::shared_ptr<State> state,
         std::string file_path, 
         std::string workspace, 
         std::vector<char> input
