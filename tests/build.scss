@@ -1,0 +1,41 @@
+.identifier {
+    &-class1 {
+        color: red;
+    }
+
+    &-class2 {
+        color: blue;
+
+        &-class3 {
+            color: green;
+        }
+    }
+
+    &-class3 {
+        color: green;
+    }
+
+    &-class4 {
+        color: yellow;
+
+        &-class5 {
+            color: purple;
+        }
+    }
+}
+
+.another-identifier {
+    color: red;
+
+    &-class1 {
+        color: blue;
+
+        .trick-i-am-a-class {
+            color: green;
+        }
+
+        .tricked-im-another-class {
+            color: yellow;
+        }
+    }
+}

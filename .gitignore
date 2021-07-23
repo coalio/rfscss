@@ -1,0 +1,7 @@
+cmake_*
+CMakeCache.txt
+main
+CMakeFiles
+Makefile
+libsrc.a
+.vscode
