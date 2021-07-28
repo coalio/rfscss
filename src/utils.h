@@ -3,21 +3,16 @@
 #include <string>
 #include <algorithm>
 
-
 namespace Utils {
     const std::string TRIM_ABLE = " \n\r\t\f\v";
-    
-    std::string ltrim(const std::string &str) {
-        size_t start = str.find_first_not_of(TRIM_ABLE);
-        return (start == std::string::npos) ? "" : str.substr(start);
-    }
-    
-    std::string rtrim(const std::string &str) {
-        size_t end = str.find_last_not_of(TRIM_ABLE);
-        return (end == std::string::npos) ? "" : str.substr(0, end + 1);
-    }
-    
-    std::string trim(const std::string &str) {
-        return rtrim(ltrim(str));
-    }
+    // Trim a string from the left wing
+    std::string ltrim(const std::string str);
+    // Trim a string from the right wing
+    std::string rtrim(const std::string str);
+    // Trim a string from both wings
+    std::string trim(const std::string str);
+    // Remove all the special characters
+    std::string tidy(std::string str);
+    // Check if the character is a whitespace
+    bool is_whitespace(char c);
 }

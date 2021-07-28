@@ -1,4 +1,5 @@
-.identifier {
+.selector // Comment after selector name { .fake-braces {} } .trick-selector {
+{
     &-class1 {
         color: red;
     }
@@ -15,10 +16,10 @@
         color: green;
     }
 
-    // No issues in parsing comments } .trick-identifier-1 {
+    // No issues in parsing comments } .trick-selector-1 {
 
     /* Even in multiline
-    } .trick-identifier-2 { */
+    } .trick-selector-2 { */
 
     &-class4 {
         color: yellow;
@@ -29,7 +30,7 @@
     }
 }
 
-.another-identifier {
+.another-selector {
     color: red;
 
     &-class1 {
@@ -42,5 +43,13 @@
         .tricked-im-another-class {
             color: yellow;
         }
+    }
+}
+
+div {
+    color: blue;
+
+    pre code {
+        color: red;
     }
 }

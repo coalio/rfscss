@@ -1,4 +1,3 @@
-// Import the standard libraries
 #include <iostream>
 #include <string>
 #include <memory>
@@ -8,11 +7,12 @@
 #include "src/state.h"
 #include "src/parser.h"
 #include "src/utils.h"
+#include "src/debug.h"
 
 int main(int argc, char* argv[])
 {
     umask(0);
-    
+
     std::string file_path = argv[1];
     std::string file_name = file_path;
     std::string workspace = file_path;
@@ -43,16 +43,19 @@ int main(int argc, char* argv[])
     }
 
     std::shared_ptr<State> state(new State());
-    std::unique_ptr<Parser> parser(new Parser());
+    std::unique_ptr<Parser> parser(new Parser(state));
 
     // Parse the file
-    parser->parse_input(state, file_path, workspace, input);
-
+    parser->parse_input(file_path, workspace, input);
+    if (state->error->kind != "") {
+        state->error->print(file_path);
+        return 1;
+    }
     // Write the refactored output
-    // Create a .scss file for every identifier
-    for (int i = 0; i < state->identifiers.size(); i++) {
-        // Create a folder using the identifier as name
-        std::string folder_name = state->identifiers[i];
+    // Create a .scss file for every selector
+    for (int i = 0; i < state->selectors.size(); i++) {
+        // Create a folder using the selector as name
+        std::string folder_name = state->selectors[i];
         // Trim the folder_name
         folder_name = Utils::trim(folder_name);
         std::string folder_path = workspace + "/" + folder_name;
