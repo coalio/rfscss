@@ -7,23 +7,15 @@
 #include "debug.h"
 
 std::vector<char> File::read(std::string file_path) {
-    std::vector<char> content;
-    std::ifstream file;
-
-    file.open(file_path, std::ios::in);
-    if (file.is_open())
-    {
-        while (!file.eof())
-        {
-            char c = file.get();
-            int c_byte = static_cast<int>(c);
-            if (c_byte == -1) break;
-            content.push_back(c);
-        }
-        file.close();
-    } else {
+    std::ifstream file(file_path);
+    if (!file.is_open()) {
         std::cout << "rfScss - File '" << file_path << "' not found" << std::endl;
     }
+
+    std::ostringstream ss;
+    ss << file.rdbuf();
+    const std::string& s = ss.str();
+    std::vector<char> content(s.begin(), s.end());
 
     return content;
 }

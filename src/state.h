@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "error.h"
+#include "debug.h"
 
 // Current state of the automaton
 struct State {
@@ -25,12 +26,14 @@ struct State {
     std::vector<std::string> selectors;
     // Vector of ints containing the selectors ids
     std::vector<int> selector_ids;
-    // Vector of ints containing the position of the selectors
+    // Vector of ints containing the cursor position of the selectors
     std::vector<int> selector_pos;
     // Vector of ints containing the line number of the selectors
     std::vector<int> selector_line;
     // Vector of strings containing the class content as a string
     std::vector<std::string> content;
     
-    State() : error(new Error()) {};
+    State() : error(new Error()) {
+        LOG("Created a new state instance");
+    };
 };

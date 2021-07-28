@@ -5,7 +5,7 @@
 class Parser {
 private:
     // The state of the parser
-    // Available at the parser.h header file
+    // This is a private class member
     std::shared_ptr<State> state;
 public:
     // Creates a new Parser instance fed by a State instance
@@ -16,10 +16,10 @@ public:
     int check_char(char c);
 
     // Moves to the next char. This also increments the current
-    // char position. Does not deal with lines/columns counters
+    // char cursor. Does not deal with lines/columns counters
     void next(char c);
     // Updates the line and column
-    void increment_position();
+    void increment_cursor();
     // Manages the state when inside a comment
     // Principally, waits for the comment closing marker
     void in_comment();

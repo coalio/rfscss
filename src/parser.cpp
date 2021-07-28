@@ -37,20 +37,20 @@ int Parser::check_char(char c) {
 }
 
 void Parser::next(char c) {
-    // If current position is above 1, then set the previous character
+    // If current cursor is above 1, then set the previous character
     // to the current character
     if (state->curr_pos > 1) {
         state->last_char = state->curr_char;
     }
 
-    // Increment the position
+    // Increment the cursor
     state->curr_pos++;
     // Set the current character
     state->curr_char = c;
     state->curr_sign = this->check_char(c);
 }
 
-void Parser::increment_position() {
+void Parser::increment_cursor() {
     // If current character is a newline, increment the line number
     if (state->curr_sign == 6) {
         state->curr_line++;
@@ -130,7 +130,7 @@ bool Parser::is_rule_or_selector() {
         state->selectors.back() += state->curr_char;
         // Assign this selector an id and push it to the selectors_id vector
         state->selector_ids.push_back(state->selectors.size() - 1);
-        // Add the position of the selector to the selector_pos vector
+        // Add the cursor of the selector to the selector_pos vector
         state->selector_pos.push_back(state->curr_pos);
         // Add the line number of the selector to the selector_line vector
         state->selector_line.push_back(state->curr_line);
@@ -232,7 +232,7 @@ void Parser::parse_input(
 ) {
     for (auto c : input) {
         this->next(c);
-        this->increment_position();
+        this->increment_cursor();
         this->in_comment();
         this->find_comment_marker();
 
