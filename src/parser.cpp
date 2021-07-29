@@ -8,7 +8,7 @@
 #include "utils.h"
 #include "parser.h"
 
-int Parser::check_char(char c) {
+int8_t Parser::check_char(char c) {
     // Return 0 if the character is a dot
     // Return 1 if the character is an opening brace
     // Return 2 if the character is a closing brace
@@ -34,20 +34,21 @@ int Parser::check_char(char c) {
         return 6;
     } else if (c == ';') {
         return 7;
-    } else {
-        return -1;
     }
+
+    return -1;
 }
 
 void Parser::next(char c) {
     // If current cursor is above 1, then set the previous character
     // to the current character
-    if (state->curr_pos > 1) {
+    if (state->curr_pos > 0) {
         state->last_char = state->curr_char;
     }
 
-    // Increment the cursor
     state->curr_pos++;
+
+    // Increment the cursor
     // Set the current character
     state->curr_char = c;
     state->curr_sign = this->check_char(c);
@@ -59,7 +60,7 @@ void Parser::increment_cursor() {
         state->curr_line++;
         state->curr_col = 1;
     } else {
-        state->curr_col += 1;
+        state->curr_col++;
     }
 }
 
@@ -165,12 +166,13 @@ bool Parser::is_opening_brace() {
 }
 
 void Parser::push_to_selector() {
+    state->selectors.back() += state->curr_char;
+
     if (state->curr_sign == 7) {
         state->getting_selector = false;
         state->expecting_rule_or_selector = true;
+        state->content.push_back(std::string());
     }
-
-    state->selectors.back() += state->curr_char;
 }
 
 int Parser::check_capture_level() {

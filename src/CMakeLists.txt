@@ -4,4 +4,5 @@ add_library(src
     error.cpp
     utils.cpp
     rfscss.cpp
+    wildcard.cpp
 )

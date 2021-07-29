@@ -6,11 +6,11 @@
 
 // Current state of the automaton
 struct State {
-    int curr_pos = 1;
+    int curr_pos = 0;
     int levels = 0;
     int curr_line = 1;
-    int curr_col = 1; 
-    int curr_sign = 0;
+    int curr_col = 0; 
+    int8_t curr_sign = 0;
     char curr_char;
     char last_char;
     bool is_comment = false;

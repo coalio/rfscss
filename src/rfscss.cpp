@@ -12,11 +12,11 @@ Specification rfscss_spec::parse_spec(std::shared_ptr<State> state, std::vector<
     struct Specification spec;
 
     for (auto c : input) {
-        if (state->curr_pos > 1) {
+        if (state->curr_pos > 0) {
             state->last_char = state->curr_char;
-            state->curr_col += 1;
         }
 
+        state->curr_col++;
         state->curr_pos++;
         state->curr_char = c;
 
@@ -62,25 +62,36 @@ Specification rfscss_spec::parse_spec(std::shared_ptr<State> state, std::vector<
             }
         } else {
             if (state->curr_char == '\n') {
-                state->curr_line += 1;
+                state->curr_line++;
                 state->curr_col = 0;
                 state->capturing_block = false;
                 state->expecting_rule_or_selector = true;
                 continue;
             }
+
+            if (state->last_char == '-' && state->curr_char == '>') {
+                char error_msg[100]; sprintf(
+                    error_msg, 
+                    ERR_SPECIFICATION_MISSING_PATH, 
+                    state->curr_line, 
+                    spec.match_strings.back().c_str()
+                );
+
+                Error * error = new Error();
+
+                error->kind = "Invalid specification";
+                error->message = error_msg;
+                error->line = state->curr_line;
+                error->column = state->curr_col;
+                error->at_char = state->curr_pos;
+
+                state->error = error;
+                return spec;
+            }
             
             spec.output_paths.back() += state->curr_char;
         }
     }
-
-    for (std::string match_string : spec.match_strings) {
-        LOG(match_string);
-    }
-
-    for (std::string output_path : spec.output_paths) {
-        LOG(output_path);
-    }
-
 
     return spec;
 }

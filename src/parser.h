@@ -13,7 +13,7 @@ public:
         LOG("Creating new parser using state: " << state->curr_pos);
     }
 
-    int check_char(char c);
+    int8_t check_char(char c);
 
     // Moves to the next char. This also increments the current
     // char cursor. Does not deal with lines/columns counters

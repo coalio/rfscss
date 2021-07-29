@@ -10,6 +10,7 @@
 #include "src/debug.h"
 #include "src/rfscss.h"
 #include "src/specification.h"
+#include "src/wildcard.h"
 
 int main(int argc, char* argv[])
 {
@@ -27,7 +28,7 @@ int main(int argc, char* argv[])
     // If workspace is equal to argv[1], then the file is in the same directory
     // as the caller
     if (workspace == argv[1]) {
-        // Set the workspace to the current directory
+        // Set the workspace to the current directory_test_wildcards
         workspace = ".";
     }
 
@@ -60,7 +61,10 @@ int main(int argc, char* argv[])
             spec_state->error->print(spec_path);
             return 1;
         }
-        return 1;
+
+        #if DEBUG
+        // _test_wildcards();
+        #endif
     }
 
     std::shared_ptr<State> state(new State());
@@ -76,13 +80,37 @@ int main(int argc, char* argv[])
     if (is_spec_available) {
         // Write the refactored output
         // Create a .scss file for every selector
+        bool is_match = false;
+        std::vector<std::string> captures;
         for (int i = 0; i < state->selectors.size(); i++) {
-            std::string file_name = state->selectors[i];
-            // Trim the folder_name
-            file_name = Utils::trim(file_name);
-            std::string file_path = workspace + "/" + file_name + ".scss";
-            std::string content = state->selectors[i] + "{" + state->content[i] + "}\n";
-            File::place_in(file_path, content);
+            std::string selector_name = state->selectors[i];
+            
+            std::string content = state->selectors[i];
+            if (state->content[i] != "") {
+                content += + "{" + state->content[i] + "}\n";
+            }
+            
+            // try for every spec to find the matching dir
+            for (int i = 0; i < spec.match_strings.size(); i++) {
+                is_match = Wildcard::match(spec.match_strings[i], selector_name, captures);
+                if (is_match) {
+                    std::string file_path = spec.output_paths[i];
+
+                    // Replace ? for its respective capture index
+                    if (!captures.empty()) {
+                        for (std::string::size_type i = 0; i != file_path.size(); ++i) {
+                            if (file_path[i] == '?') {
+                                file_path.replace(i, 1, Utils::tidy(captures[0]));
+                                i += captures[0].size() - 1;
+                                captures.erase(captures.begin());
+                            }
+                        }
+                    }
+
+                    File::place_in(file_path, content);
+                    break;
+                }
+            }
         }
     } else {
         // Write the specification

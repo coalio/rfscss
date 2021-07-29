@@ -1,56 +1,25 @@
-.selector // Comment after selector name { .fake-braces {} } .trick-selector {
-{
-    &-class1 {
-        color: red;
-    }
+@import "fake.scss";
 
-    &-class2 {
-        color: blue;
-
-        &-class3 {
-            color: green;
-        }
-    }
-
-    &-class3 {
-        color: green;
-    }
-
-    // No issues in parsing comments } .trick-selector-1 {
-
-    /* Even in multiline
-    } .trick-selector-2 { */
-
-    &-class4 {
-        color: yellow;
-
-        &-class5 {
-            color: purple;
-        }
-    }
-}
-
-.another-selector {
-    color: red;
-
-    &-class1 {
-        color: blue;
-
-        .trick-i-am-a-class {
-            color: green;
-        }
-
-        .tricked-im-another-class {
-            color: yellow;
-        }
-    }
-}
-
-div,
-html {
+.this-is-a-class {
     color: blue;
+}
 
-    pre code {
-        color: red;
-    }
+.this-is-another-class {
+    color: red;
+}
+
+#id_selector {
+    color: red !important;
+}
+
+[class="wonderful"] {
+    color: green;
+}
+
+[class] {
+    color: yellow;
+}
+
+[yea_class] {
+    color: red;
 }
