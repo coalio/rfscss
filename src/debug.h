@@ -1,7 +1,8 @@
 #pragma once
+#include <iostream>
 #define DEBUG true
 #if DEBUG
-// LOG is a debug log macro. It prints the message in the first parameter to cout. Also prints the current file and line.
+// LOG is a debug log macro. It prints the message in the first parameter to cout. Also prints the current file && line.
 #define LOG(x) std::cout << "[" << __FILE__ << ":" << __LINE__ << "] " << x << std::endl
 #else
 // LOG is a debug log macro that is intended to be turned on during

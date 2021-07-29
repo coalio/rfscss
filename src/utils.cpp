@@ -16,17 +16,27 @@ std::string Utils::trim(const std::string str) {
 }
 
 std::string Utils::tidy(std::string str) {
-    // Remove all special characters from str
     str.erase(std::remove_if(str.begin(), str.end(), [](char c) {
-        return (!std::isprint(c) || !(isalnum(c) || c == '.'));
+        return (!std::isprint(c) || !(isalnum(c) || c == ',' || c == ' '));
     }), str.end());
-    // Replace space with underscore
-    str.replace(str.begin(), str.end(), ' ', '_');
+
+    str = replace(str, ",", "_");
+    str = replace(str, " ", "_");
+
+    return str;
+}
+
+std::string Utils::replace(std::string str, std::string find, std::string replace) {
+    size_t pos = 0;
+
+    while ((pos = str.find(find, pos)) != std::string::npos) {
+        str.replace(pos, find.length(), replace);
+        pos += replace.length();
+    }
 
     return str;
 }
 
 bool Utils::is_whitespace(char c) {
-    // Check if character is whitespace
     return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
 }

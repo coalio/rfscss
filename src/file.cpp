@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <cstring>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "file.h"
@@ -20,27 +21,32 @@ std::vector<char> File::read(std::string file_path) {
     return content;
 }
 
-void File::place_in(std::string folder_path, std::string folder_name, std::string content) {
+void File::place_in(std::string file_path, std::string content) {
     // If the folder does not exist, create it
     struct stat info;
     
-    int ret = mkdir(folder_path.c_str(), 0777);
-    if (ret == 0) {
-        std::cout << "rfScss - Created folder '" << folder_path << "'" << std::endl;
-    } else {
-        std::cout << "rfScss - In folder '" << folder_path << "'" << std::endl;
+    std::string folder = file_path;
+    std::string::size_type delim_pos = folder.find_last_of("/");
+    if (delim_pos != std::string::npos) {
+        folder = folder.substr(0, delim_pos);
     }
 
-    // Create a .scss file for this selector and put the content in it
-    std::string file_name = folder_name + ".scss";
-    std::string file_path = folder_path + "/" + file_name;
+    if (folder != file_path) {
+        int ret = mkdir(folder.c_str(), 0777);
+        if (ret == 0) {
+            std::cout << "rfScss - Created folder '" << folder << "'" << std::endl;
+        } else {
+            std::cout << "rfScss - In folder '" << folder << "'" << std::endl;
+        }
+    }
 
     std::cout << "rfScss - Saving '" << file_path << "'" << std::endl;
-    std::stringstream ss;
-    ss << folder_name << " {";
-    ss << content << "}\n";
     std::ofstream file;
-    file.open(file_path, std::ios::out);
-    file << ss.str();
-    file.close();
+    file.open(file_path, std::ios::out | std::ios::app);
+    if (file.fail()) {
+        throw std::ios_base::failure(std::strerror(errno));
+    }
+
+    file.exceptions(file.exceptions() | std::ios::failbit | std::ifstream::badbit);
+    file << std::endl << content;
 }

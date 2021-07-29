@@ -13,6 +13,8 @@ namespace Utils {
     std::string trim(const std::string str);
     // Remove all the special characters
     std::string tidy(std::string str);
+    // Replace all occurrences of a string
+    std::string replace(std::string str, std::string find, std::string replace);
     // Check if the character is a whitespace
     bool is_whitespace(char c);
 }

@@ -5,7 +5,7 @@
 class Error {
 public:
     std::string kind = "";
-    std::string error_message = "";
+    std::string message = "";
     int line; 
     int column;
     int at_char;

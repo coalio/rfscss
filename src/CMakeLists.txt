@@ -3,4 +3,5 @@ add_library(src
     parser.cpp
     error.cpp
     utils.cpp
+    rfscss.cpp
 )

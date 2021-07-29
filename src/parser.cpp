@@ -16,6 +16,7 @@ int Parser::check_char(char c) {
     // Return 4 if the character is a forward slash
     // Return 5 if the character is an asterisk
     // Return 6 if the character is a newline
+    // Return 7 if the character is a semicolon
 
     if (c == '.') {
         return 0;
@@ -31,6 +32,8 @@ int Parser::check_char(char c) {
         return 5;
     } else if (c == '\n') {
         return 6;
+    } else if (c == ';') {
+        return 7;
     } else {
         return -1;
     }
@@ -64,7 +67,7 @@ void Parser::in_comment() {
     // Check if is_comment is true
     if (state->is_comment) {
         // If the character is an forward slash, we are in hold comment mode
-        // and the last character was an asterisk, set is_comment multiline
+        // && the last character was an asterisk, set is_comment multiline
         // to false
         if (state->curr_sign == 4 && state->hold_comment && state->last_char == '*') {
             state->is_comment = false;
@@ -74,19 +77,19 @@ void Parser::in_comment() {
             state->hold_comment = false;
         }
 
-        // If the current character is a newline and we are not in a multiline comment,
+        // If the current character is a newline && we are not in a multiline comment,
         // set is_comment to false
         if (state->curr_sign == 6 && !state->is_multiline_comment) {
             state->is_comment = false;
         }
 
-        // If the current character is an asterisk and we are in a multiline comment,
+        // If the current character is an asterisk && we are in a multiline comment,
         // set hold comment to true
         if (state->curr_sign == 5 && state->is_multiline_comment) {
             state->hold_comment = true;
         }
 
-        // If the character is an asterisk and we are in a comment,
+        // If the character is an asterisk && we are in a comment,
         // set hold comment to true
         if (state->curr_sign == 5 && state->is_comment && !state->hold_comment) {
             state->hold_comment = true;
@@ -97,14 +100,14 @@ void Parser::in_comment() {
 void Parser::find_comment_marker() {
     if (!state->is_comment) {
         // If the character is an asterisk, we are in hold comment mode
-        // and the last character was a forward slash, set is_comment multiline
+        // && the last character was a forward slash, set is_comment multiline
         // to true
         if (state->curr_sign == 5 && state->hold_comment && state->last_char == '/') {
             state->is_comment = true;
             state->is_multiline_comment = true;
         } else  if (state->curr_sign == 4 && state->hold_comment && state->last_char == '/') {
             // If the character is a forward slash, we are in hold comment mode
-            // and the last character was a forward slash, set is_comment to true
+            // && the last character was a forward slash, set is_comment to true
             state->is_comment = true;
         } else {
             // Comment marker didn't complete
@@ -119,7 +122,7 @@ void Parser::find_comment_marker() {
 }
 
 bool Parser::is_rule_or_selector() {
-    // If we're expecting a selector or rule and
+    // If we're expecting a selector or rule &&
     // current character is not a whitespace
     if (
         state->expecting_rule_or_selector && 
@@ -128,7 +131,7 @@ bool Parser::is_rule_or_selector() {
     ) {
         state->selectors.push_back(std::string());
         state->selectors.back() += state->curr_char;
-        // Assign this selector an id and push it to the selectors_id vector
+        // Assign this selector an id && push it to the selectors_id vector
         state->selector_ids.push_back(state->selectors.size() - 1);
         // Add the cursor of the selector to the selector_pos vector
         state->selector_pos.push_back(state->curr_pos);
@@ -162,6 +165,11 @@ bool Parser::is_opening_brace() {
 }
 
 void Parser::push_to_selector() {
+    if (state->curr_sign == 7) {
+        state->getting_selector = false;
+        state->expecting_rule_or_selector = true;
+    }
+
     state->selectors.back() += state->curr_char;
 }
 
@@ -191,7 +199,7 @@ bool Parser::check_parsing_errors() {
         
         error->at_char = state->selector_pos.back();
         error->column = 1; 
-        error->error_message = error_msg;
+        error->message = error_msg;
         error->kind = "Unbalanced braces"; 
         error->line = state->selector_line.back(); 
 
@@ -212,7 +220,7 @@ bool Parser::check_parsing_errors() {
         
         error->at_char = state->selector_pos.back();
         error->column = 1; 
-        error->error_message = error_msg;
+        error->message = error_msg;
         error->kind = "Unbalanced braces"; 
         error->line = state->selector_line.back();
 
