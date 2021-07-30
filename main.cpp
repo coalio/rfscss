@@ -81,20 +81,21 @@ int main(int argc, char* argv[])
         // Write the refactored output
         // Create a .scss file for every selector
         bool is_match = false;
-        std::vector<std::string> captures;
-        for (int i = 0; i < state->selectors.size(); i++) {
-            std::string selector_name = state->selectors[i];
+        std::vector<std::string> captures; 
+        std::vector<std::string> import_paths;
+        for (int selector_index = 0; selector_index < state->selectors.size(); selector_index++) {
+            std::string selector_name = state->selectors[selector_index];
             
-            std::string content = state->selectors[i];
-            if (state->content[i] != "") {
-                content += + "{" + state->content[i] + "}\n";
+            std::string content = state->selectors[selector_index];
+            if (state->content[selector_index] != "") {
+                content += + "{" + state->content[selector_index] + "}\n";
             }
-            
+
             // try for every spec to find the matching dir
-            for (int i = 0; i < spec.match_strings.size(); i++) {
-                is_match = Wildcard::match(spec.match_strings[i], selector_name, captures);
+            for (int match_index = 0; match_index < spec.match_strings.size(); match_index++) {
+                is_match = Wildcard::match(spec.match_strings[match_index], selector_name, captures);
                 if (is_match) {
-                    std::string file_path = spec.output_paths[i];
+                    std::string file_path = spec.output_paths[match_index];
 
                     // Replace ? for its respective capture index
                     if (!captures.empty()) {
@@ -108,10 +109,28 @@ int main(int argc, char* argv[])
                     }
 
                     File::place_in(file_path, content);
+                    if (std::find(import_paths.begin(), import_paths.end(), file_path) == import_paths.end()) {
+                        std::cout << ". added import path " << file_path << std::endl;
+                        import_paths.push_back(file_path);
+                    }
                     break;
                 }
             }
+
+            if (!is_match) {
+                std::cout << "rfScss - warning: there are selectors without match in specification, these will be missing.\nmake sure you are specific-enough or declare a '%' or '?' rule" << std::endl;
+            }
         }
+        
+        // write import.scss file
+
+        std::stringstream ss;
+        for (std::string import_path : import_paths) {
+            ss << "@import \"" << import_path << "\";" << std::endl;
+        }
+
+        std::cout << ". creating imports.scss at " << workspace + "/imports.scss" << std::endl;
+        File::place_in(workspace + "/imports.scss", ss.str());
     } else {
         // Write the specification
         std::stringstream specification_content;

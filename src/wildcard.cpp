@@ -168,6 +168,7 @@ bool Wildcard::match(
                 // If there is nothing after ?,
                 // anything that comes will be valid anyways, so set
                 // is_match to true and capture everything next then break
+                state.captures.push_back(std::string());
                 state.captures.back() += compare.substr(state.virtual_curr_pos);
                 break;
             }

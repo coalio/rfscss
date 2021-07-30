@@ -33,14 +33,9 @@ void File::place_in(std::string file_path, std::string content) {
 
     if (folder != file_path) {
         int ret = mkdir(folder.c_str(), 0777);
-        if (ret == 0) {
-            std::cout << "rfScss - Created folder '" << folder << "'" << std::endl;
-        } else {
-            std::cout << "rfScss - In folder '" << folder << "'" << std::endl;
-        }
     }
 
-    std::cout << "rfScss - Saving '" << file_path << "'" << std::endl;
+    // std::cout << "rfScss - Saving '" << file_path << "'" << std::endl;
     std::ofstream file;
     file.open(file_path, std::ios::out | std::ios::app);
     if (file.fail()) {
