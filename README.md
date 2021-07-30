@@ -4,7 +4,7 @@ This tool parses and refactors CSS or SCSS files
 
 ## Why?
 
-I've found myself in the need to convert a 28k+ lines SCSS file (compiled from a CSS) into many different files, because dealing with a file of this large is complicated for the editor.
+I've found myself in the need to convert a 28k+ lines SCSS file (compiled from a CSS) into many different files, because dealing with a file of this size is complicated for the editor.
 
 ## About
 
