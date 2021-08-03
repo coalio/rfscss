@@ -97,4 +97,4 @@ In case of multiple `?` _wildcards_ in the same _match string_, they are placed 
 
 If a selector does not match any of the rules specified, it gets assigned a file name && gets placed at the parent directory of the base _.scss_ file.
 
-Keep in mind that the right arrow used to separate the rules **also counts as a special character.** If you wish to compare it against with a selector you must escape it as `-\>`, otherwise you'll receive an error while parsing the _.rfscss_ file.
+Keep in mind that the right arrow used to separate the rules **also counts as a special character.** If you wish to compare it against a selector you must escape it as `-\>`, otherwise you'll receive an error while parsing the _.rfscss_ file.
