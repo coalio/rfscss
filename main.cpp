@@ -134,7 +134,7 @@ int main(int argc, char* argv[])
         }
 
         if (selectors_without_match) {
-            std::cout << "rfScss - warning: there are selectors without match in specification, these will be missing.\nmake sure you are specific-enough or declare a '%' or '?' rule" << std::endl;
+            std::cout << "rfscss - warning: there are selectors without match in specification, these will be missing.\nmake sure you are specific-enough or declare a '%' or '?' rule" << std::endl;
         }
 
         std::cout << ". creating imports." << file_ext << " at " << workspace + "/imports." << file_ext << std::endl;

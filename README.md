@@ -1,15 +1,15 @@
-# rfScss
+# rfscss
 
 This tool parses and refactors CSS or SCSS files
 
 ## Index
 
-- <a href="#about">About</a>
-- <a href="#usage">Usage</a>
-- <a href="#build">Build</a>
-- <a href="#notes">Notes</a>
-- <a href="#rfscss_file">The .rfscss file</a>
-- <a href="#constraints">Constraints</a>
+-   <a href="#about">About</a>
+-   <a href="#usage">Usage</a>
+-   <a href="#build">Build</a>
+-   <a href="#notes">Notes</a>
+-   <a href="#rfscss_file">The .rfscss file</a>
+-   <a href="#constraints">Constraints</a>
 
 ## Why?
 
@@ -19,14 +19,14 @@ I've found myself in the need to convert a 28k+ lines SCSS file (compiled from a
 
 This utility allows you to refactor the main file, split it into multiple imports or select a specific subset and paste it in a different file, depending in the .rfscss specification
 
-The .rfscss specification contains a set of rules that tell rfScss how to deal with the input code.
+The .rfscss specification contains a set of rules that tell rfscss how to deal with the input code.
 
 SCSS is parsed from a sequence of Unicode code points, without first being converted in a token stream. This utility, however, does not decode into Unicode, instead it directly deals with the sequence of bytes.
 As of now, this utility does not support nesting due to lack of time.
 
 <h3 id="usage">Usage</h3>
 
-Spawn rfScss and provide the path to a .scss file as a first argument:
+Spawn rfscss and provide the path to a .scss file as a first argument:
 `$ rfscss <path>`
 
 The file will be analized and parsed. If a .rfscss file was not found, it will be generated automatically at the parent directory. This file will contain the default refactoring rules which you can customize after.
@@ -40,7 +40,7 @@ To build this utility, you will need CMake 3.12 or above, as well as `make`.
 Run the following command to compile the project:
 `cmake . && make`
 
-Alternatively, there is a linux pre-compiled binary available at <a href="https://github.com/coalio/rfScss/releases">releases</a>
+Alternatively, there is a linux pre-compiled binary available at <a href="https://github.com/coalio/rfscss/releases">releases</a>
 
 <h3 id="notes">Notes</h3>
 
