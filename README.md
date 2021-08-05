@@ -29,9 +29,9 @@ As of now, this utility does not support nesting due to lack of time.
 Spawn rfscss and provide the path to a .scss file as a first argument:
 `$ rfscss <path>`
 
-The file will be analized and parsed. If a .rfscss file was not found, it will be generated automatically at the parent directory. This file will contain the default refactoring rules which you can customize after.
+The file will be analized and parsed. If a .rfscss file was not found, it will be generated automatically at the parent directory. This file contains the default refactoring rules which you are supposed to customize after.
 
-If a .rfscss file was found, the program will read it and set all of the rules specified in it.
+If a .rfscss file is foun then the program will read it and begin refactoring your file.
 
 <h3 id="build">Build</h3>
 
@@ -64,9 +64,9 @@ For cleanliness, intrusive comments in the selector are stripped out always.
 
 <h3 id="rfscss_file">The .rfscss file</h3>
 
-A _.rfscss_ file should contain a sequence of rules. These rules must consist of a _match string_ && an output file path, separated by a right arrow. This file is parsed at the moment of running rfscss && it is expected to be found at the same directory of the main _.scss_ file. A default _.rfscss_ file is generated if it does not exist.
+A _.rfscss_ file should contain a sequence of rules. These rules must consist of a _pattern_ and an output file path, separated by a right arrow. This file is parsed at the moment of running rfscss and it is expected to be found at the same directory of the main _.scss_ file. A default _.rfscss_ file is generated if it does not exist.
 
-The _match string_ is compared against the selectors. All characters must be exact, except for the _wildcards_ where the characters could be any.
+The _pattern_ is compared against the selectors. All characters must be exact, except for the _wildcards_ where the characters could be any.
 
 The _wildcards_ are:
 
@@ -109,8 +109,8 @@ anything
 
 The rules are ran in the order they are specified. **The order of the rules does matter**.
 
-In case of multiple `?` _wildcards_ in the same _match string_, they are placed in the order they are captured.
+In case of multiple `?` _wildcards_ in the same _pattern_, the captures are placed in the order they are captured.
 
-If a selector does not match any of the rules specified in the .rfscss file, this selector **will be ignored**. If you wish to include all selectors/rules, you must be either _very specific_ or include a `#` or `?` rule that will match anything just-in-case.
+If a selector does not match any of the patterns specified in the .rfscss file, this selector **will be ignored**. If you wish to include all selectors/rules, you must be either _very specific_ or include a `#` or `?` rule that will match anything _just in case._
 
 Keep in mind that the right arrow used to separate the rules **also counts as a special character.** If you wish to compare it against a selector you must escape it as `-\>`, otherwise you'll receive an error while parsing the _.rfscss_ file.
