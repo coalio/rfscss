@@ -1,0 +1,19 @@
+#id_selector {
+    color: blue;
+}
+
+.selector-1{
+    color: red;
+}
+
+[value_attr="yes"] {
+    color: green;
+}
+
+[attr] {
+    color: yellow;
+}
+
+* {
+    color: pink;
+}

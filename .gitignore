@@ -6,4 +6,6 @@ Makefile
 libsrc.a
 .vscode
 tests/*
+!tests/build.*
+!tests/.rfscss
 rfscss
