@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#define DEBUG true
+#define DEBUG false
 #define PRINT_FILE_NAME false
 #if DEBUG
 // LOG is a debug log macro. It prints the message in the first parameter to cout. Also prints the current file && line.

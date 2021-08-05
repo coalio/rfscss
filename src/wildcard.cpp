@@ -128,7 +128,6 @@ bool Wildcard::match(
 ) {
     struct Wildcard::WildcardState state;
     bool is_match = true;
-    LOG("about to capture for " << pattern << " and " << compare);
     while (state.pivot_curr_pos < compare.size()) {
         if (state.curr_pos > 0) {
             state.last_sign = state.curr_sign;
@@ -139,29 +138,21 @@ bool Wildcard::match(
         }
         
         state.curr_sign = check_char(pattern[state.curr_pos]);
-        LOG("curr sign: " << state.curr_sign);
-        LOG("about to do the state for character " << pattern[state.curr_pos]);
-        LOG("and also for character " << compare[state.pivot_curr_pos]);
         if (state.curr_sign == 0 || state.take_next_literally) {
-            LOG("either not a special char or we're taking this literally >> " << state.curr_pos);
-            LOG("pivot at >> " << state.pivot_curr_pos);
             // The "pivot" current position does not match the compare
             // current position
             if (pattern[state.curr_pos] != compare[state.pivot_curr_pos]) {
                 is_match = false;
 
                 if (state.on_pivot_wildcard) {
-                    LOG("this is not the pivot break we're looking for, therefore start looking again");
                     state.curr_pos = state.match_position_point;
                     state.on_pivot_position = true;
                 } else {
                     // If it fails an absolute exact match without a wildcard, the string
                     // will never match the pattern
-                    LOG("this string will never match >> " << pattern << "=/" << compare);
                     break;
                 }
             } else if (state.on_pivot_wildcard) {
-                LOG("exactly the match we were looking for, time to match");
                 state.on_pivot_position = false;
                 is_match = true;
             }
@@ -185,7 +176,6 @@ bool Wildcard::match(
         }
         
         if (state.curr_sign == 2 && !state.take_next_literally) {
-            LOG("gonna begin capturing at this position >> " << state.curr_pos);
             state.curr_pos++;
             if (!pattern[state.curr_pos] && is_match == true) {
                 // If there is nothing after ?,
@@ -194,7 +184,6 @@ bool Wildcard::match(
                 state.captures.push_back(std::string());
                 state.captures.back() += compare.substr(state.pivot_curr_pos);
                 break;
-                LOG("nothing after ?, capture everything left and exit");
             }
 
             // is_match is false until the following characters are met
@@ -215,7 +204,6 @@ bool Wildcard::match(
         }
 
         if (state.curr_sign == 4 && !state.take_next_literally) {
-            LOG("we're gonna take next literally");
             state.take_next_literally = true;
             // Skip this one and continue on the next
             state.curr_pos++;
@@ -228,17 +216,12 @@ bool Wildcard::match(
         }
 
         if (state.on_pivot_position && state.is_capturing) {
-            LOG("we're now capturing >> " << state.curr_pos);
-            LOG("capturing on pivot position >> " << state.pivot_curr_pos);
             state.captures.back() += compare[state.pivot_curr_pos];
-            LOG("also this is the content that we have captured yet: " << state.captures.back());
-            LOG("in this iteration we have added this >> " << compare[state.pivot_curr_pos]);
         }
 
         state.pivot_curr_pos++;
         // Only update current position if we're not on a pivot position.
         if (!state.on_pivot_position) {
-            LOG("we update curr pos cause we're not in a pivot position");
             state.curr_pos++;
         }
     }

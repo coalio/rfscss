@@ -14,8 +14,6 @@
 
 int main(int argc, char* argv[])
 {
-    _test_wildcards();
-    return 1;
     umask(0);
 
     std::string file_path = argv[1];
@@ -132,7 +130,7 @@ int main(int argc, char* argv[])
         }
 
         std::cout << ". creating imports.scss at " << workspace + "/imports.scss" << std::endl;
-        // File::place_in(workspace + "/imports.scss", ss.str());
+        File::place_in(workspace + "/imports.scss", ss.str());
     } else {
         // Write the specification
         std::stringstream specification_content;
