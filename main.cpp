@@ -68,10 +68,6 @@ int main(int argc, char* argv[])
             spec_state->error->print(spec_path);
             return 1;
         }
-
-        #if DEBUG
-        // _test_wildcards();
-        #endif
     }
 
     std::shared_ptr<State> state(new State());
