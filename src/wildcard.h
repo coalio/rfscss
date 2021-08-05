@@ -15,13 +15,13 @@ namespace Wildcard {
     );
 
     struct WildcardState {
-        int virtual_curr_pos = 0;
+        int pivot_curr_pos = 0;
         int last_sign = 0;
         int curr_sign;
         int curr_pos = 0;
         int match_position_point;
-        bool on_virtual_wildcard = false;
-        bool on_virtual_position = false;
+        bool on_pivot_wildcard = false;
+        bool on_pivot_position = false;
         bool is_capturing = false;
         bool take_next_literally = false;
 
