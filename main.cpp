@@ -132,7 +132,7 @@ int main(int argc, char* argv[])
         }
 
         std::cout << ". creating imports.scss at " << workspace + "/imports.scss" << std::endl;
-        File::place_in(workspace + "/imports.scss", ss.str());
+        // File::place_in(workspace + "/imports.scss", ss.str());
     } else {
         // Write the specification
         std::stringstream specification_content;
@@ -150,7 +150,7 @@ int main(int argc, char* argv[])
             specification_content << selector_name << "->" << selector_folder << std::endl;
         }
 
-        File::place_in(workspace + "/.rfscss", specification_content.str());
+        // File::place_in(workspace + "/.rfscss", specification_content.str());
         std::cout << "List specification saved at " << workspace << "/.rfscss\n";
     }
 

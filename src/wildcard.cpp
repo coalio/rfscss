@@ -47,6 +47,11 @@ bool Wildcard::match(std::string pattern, std::string compare) {
                 if (state.on_pivot_wildcard) {
                     state.curr_pos = state.match_position_point;
                     state.on_pivot_position = true;
+                } else {
+                    // If it fails an absolute exact match without a wildcard, the string
+                    // will never match the pattern
+                    LOG("this string will never match >> " << pattern << "=/" << compare);
+                    break;
                 }
             } else if (state.on_pivot_wildcard) {
                 state.on_pivot_position = false;
@@ -98,6 +103,12 @@ bool Wildcard::match(std::string pattern, std::string compare) {
             state.take_next_literally = true;
             // Skip this one and continue on the next
             state.curr_pos++;
+
+            // If this is next to % or ?, the character the backslash is escaping
+            // should be the match point, not the backslash itself
+            if (state.last_sign == 1 || state.last_sign == 2) {
+                state.match_position_point = state.curr_pos;
+            }
         }
 
         state.pivot_curr_pos++;
@@ -143,6 +154,11 @@ bool Wildcard::match(
                     LOG("this is not the pivot break we're looking for, therefore start looking again");
                     state.curr_pos = state.match_position_point;
                     state.on_pivot_position = true;
+                } else {
+                    // If it fails an absolute exact match without a wildcard, the string
+                    // will never match the pattern
+                    LOG("this string will never match >> " << pattern << "=/" << compare);
+                    break;
                 }
             } else if (state.on_pivot_wildcard) {
                 LOG("exactly the match we were looking for, time to match");
