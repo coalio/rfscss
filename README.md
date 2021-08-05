@@ -6,6 +6,7 @@ This tool parses and refactors CSS or SCSS files
 
 - <a href="#about">About</a>
 - <a href="#usage">Usage</a>
+- <a href="#build">Build</a>
 - <a href="#notes">Notes</a>
 - <a href="#rfscss_file">The .rfscss file</a>
 - <a href="#constraints">Constraints</a>
@@ -25,14 +26,21 @@ As of now, this utility does not support nesting due to lack of time.
 
 <h3 id="usage">Usage</h3>
 
-```
 Spawn rfScss and provide the path to a .scss file as a first argument:
-- rfscss <path>
+`$ rfscss <path>`
 
 The file will be analized and parsed. If a .rfscss file was not found, it will be generated automatically at the parent directory. This file will contain the default refactoring rules which you can customize after.
 
 If a .rfscss file was found, the program will read it and set all of the rules specified in it.
-```
+
+<h3 id="build">Build</h3>
+
+To build this utility, you will need CMake 3.12 or above, as well as `make`.
+
+Run the following command to compile the project:
+`cmake . && make`
+
+Alternatively, there is a linux pre-compiled binary available at <a href="https://github.com/coalio/rfScss/releases">releases</a>
 
 <h3 id="notes">Notes</h3>
 
