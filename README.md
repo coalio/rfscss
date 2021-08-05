@@ -103,6 +103,6 @@ The rules are ran in the order they are specified. **The order of the rules does
 
 In case of multiple `?` _wildcards_ in the same _match string_, they are placed in the order they are captured.
 
-If a selector does not match any of the rules specified in the .rfscss file, this selector **will be ignored**. If you wish to include all selectors, you must be either _very specific_ or include a `#` or `?` rule that will match anything just-in-case.
+If a selector does not match any of the rules specified in the .rfscss file, this selector **will be ignored**. If you wish to include all selectors/rules, you must be either _very specific_ or include a `#` or `?` rule that will match anything just-in-case.
 
 Keep in mind that the right arrow used to separate the rules **also counts as a special character.** If you wish to compare it against a selector you must escape it as `-\>`, otherwise you'll receive an error while parsing the _.rfscss_ file.
