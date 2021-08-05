@@ -7,7 +7,7 @@ This tool parses and refactors CSS or SCSS files
 - <a href="#about">About</a>
 - <a href="#usage">Usage</a>
 - <a href="#notes">Notes</a>
-- <a href="#rfscss">The .rfscss file</a>
+- <a href="#rfscss_file">The .rfscss file</a>
 - <a href="#constraints">Constraints</a>
 
 ## Why?
@@ -54,7 +54,7 @@ For cleanliness, intrusive comments in the selector are stripped out always.
 }
 ```
 
-<h3 id="rfscss">The .rfscss file</h3>
+<h3 id="rfscss_file">The .rfscss file</h3>
 
 A _.rfscss_ file should contain a sequence of rules. These rules must consist of a _match string_ && an output file path, separated by a right arrow. This file is parsed at the moment of running rfscss && it is expected to be found at the same directory of the main _.scss_ file. A default _.rfscss_ file is generated if it does not exist.
 
