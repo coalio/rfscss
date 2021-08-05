@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
                         }
                     }
 
-                    // File::place_in(file_path, content);
+                    File::place_in(file_path, content);
                     if (std::find(import_paths.begin(), import_paths.end(), file_path) == import_paths.end()) {
                         std::cout << ". added import path " << file_path << std::endl;
                         import_paths.push_back(file_path);
