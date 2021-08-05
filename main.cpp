@@ -18,6 +18,7 @@ int main(int argc, char* argv[])
 
     std::string file_path = argv[1];
     std::string file_name = file_path;
+    std::string file_ext = file_path;
     std::string workspace = file_path;
 
     std::string::size_type delim_pos = workspace.find_last_of("/");
@@ -36,6 +37,12 @@ int main(int argc, char* argv[])
     delim_pos = file_name.find_last_of("/");
     if (delim_pos != std::string::npos) {
         file_name = file_name.substr(delim_pos + 1);
+    }
+
+    // Get the file extension
+    delim_pos = file_ext.find_last_of(".");
+    if (delim_pos != std::string::npos) {
+        file_ext = file_ext.substr(delim_pos + 1);
     }
 
     // Open the file
@@ -81,6 +88,7 @@ int main(int argc, char* argv[])
         // Write the refactored output
         // Create a .scss file for every selector
         bool is_match = false;
+        bool selectors_without_match = false;
         std::vector<std::string> captures; 
         std::vector<std::string> import_paths;
         for (int selector_index = 0; selector_index < state->selectors.size(); selector_index++) {
@@ -118,7 +126,7 @@ int main(int argc, char* argv[])
             }
 
             if (!is_match) {
-                std::cout << "rfScss - warning: there are selectors without match in specification, these will be missing.\nmake sure you are specific-enough or declare a '%' or '?' rule" << std::endl;
+                selectors_without_match = true;
             }
         }
         
@@ -129,8 +137,12 @@ int main(int argc, char* argv[])
             ss << "@import \"" << import_path << "\";" << std::endl;
         }
 
-        std::cout << ". creating imports.scss at " << workspace + "/imports.scss" << std::endl;
-        File::place_in(workspace + "/imports.scss", ss.str());
+        if (selectors_without_match) {
+            std::cout << "rfScss - warning: there are selectors without match in specification, these will be missing.\nmake sure you are specific-enough or declare a '%' or '?' rule" << std::endl;
+        }
+
+        std::cout << ". creating imports." << file_ext << " at " << workspace + "/imports." << file_ext << std::endl;
+        File::place_in(workspace + "/imports." + file_ext, ss.str());
     } else {
         // Write the specification
         std::stringstream specification_content;
