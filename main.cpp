@@ -14,6 +14,8 @@
 
 int main(int argc, char* argv[])
 {
+    _test_wildcards();
+    return 1;
     umask(0);
 
     std::string file_path = argv[1];

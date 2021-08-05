@@ -27,7 +27,7 @@ bool Wildcard::match(std::string pattern, std::string compare) {
     struct Wildcard::WildcardState state;
     bool is_match = true;
 
-    while (state.virtual_curr_pos < compare.size()) {
+    while (state.pivot_curr_pos < compare.size()) {
         if (state.curr_pos > 0) {
             state.last_sign = state.curr_sign;
         }
@@ -39,17 +39,17 @@ bool Wildcard::match(std::string pattern, std::string compare) {
         state.curr_sign = check_char(pattern[state.curr_pos]);
         
         if (state.curr_sign == 0 || state.take_next_literally) {
-            // The "virtual" current position does not match the compare
+            // The "pivot" current position does not match the compare
             // current position
-            if (pattern[state.curr_pos] != compare[state.virtual_curr_pos]) {
+            if (pattern[state.curr_pos] != compare[state.pivot_curr_pos]) {
                 is_match = false;
 
-                if (state.on_virtual_wildcard) {
+                if (state.on_pivot_wildcard) {
                     state.curr_pos = state.match_position_point;
-                    state.on_virtual_position = true;
+                    state.on_pivot_position = true;
                 }
-            } else if (state.on_virtual_wildcard) {
-                state.on_virtual_position = false;
+            } else if (state.on_pivot_wildcard) {
+                state.on_pivot_position = false;
                 is_match = true;
             }
         }
@@ -66,8 +66,8 @@ bool Wildcard::match(std::string pattern, std::string compare) {
             // is_match is false until the following characters are met
             // remains false if they were never met
             is_match = false;
-            state.on_virtual_position = true;
-            state.on_virtual_wildcard = true;
+            state.on_pivot_position = true;
+            state.on_pivot_wildcard = true;
             state.match_position_point = state.curr_pos;
         }
         
@@ -83,13 +83,13 @@ bool Wildcard::match(std::string pattern, std::string compare) {
             // is_match is false until the following characters are met
             // remains false if they were never met
             is_match = false;
-            state.on_virtual_position = true;
-            state.on_virtual_wildcard = true;
+            state.on_pivot_position = true;
+            state.on_pivot_wildcard = true;
             state.match_position_point = state.curr_pos;
         }
 
         if (state.curr_sign == 3 && !state.take_next_literally) {
-            if (!compare[state.virtual_curr_pos]) {
+            if (!compare[state.pivot_curr_pos]) {
                 is_match = false;
             }
         }
@@ -100,9 +100,9 @@ bool Wildcard::match(std::string pattern, std::string compare) {
             state.curr_pos++;
         }
 
-        state.virtual_curr_pos++;
-        // Only update current position if we're not on a virtual position.
-        if (!state.on_virtual_position) {
+        state.pivot_curr_pos++;
+        // Only update current position if we're not on a pivot position.
+        if (!state.on_pivot_position) {
             state.curr_pos++;
         }
     }
@@ -117,8 +117,8 @@ bool Wildcard::match(
 ) {
     struct Wildcard::WildcardState state;
     bool is_match = true;
-
-    while (state.virtual_curr_pos < compare.size()) {
+    LOG("about to capture for " << pattern << " and " << compare);
+    while (state.pivot_curr_pos < compare.size()) {
         if (state.curr_pos > 0) {
             state.last_sign = state.curr_sign;
         }
@@ -128,19 +128,25 @@ bool Wildcard::match(
         }
         
         state.curr_sign = check_char(pattern[state.curr_pos]);
-        
+        LOG("curr sign: " << state.curr_sign);
+        LOG("about to do the state for character " << pattern[state.curr_pos]);
+        LOG("and also for character " << compare[state.pivot_curr_pos]);
         if (state.curr_sign == 0 || state.take_next_literally) {
-            // The "virtual" current position does not match the compare
+            LOG("either not a special char or we're taking this literally >> " << state.curr_pos);
+            LOG("pivot at >> " << state.pivot_curr_pos);
+            // The "pivot" current position does not match the compare
             // current position
-            if (pattern[state.curr_pos] != compare[state.virtual_curr_pos]) {
+            if (pattern[state.curr_pos] != compare[state.pivot_curr_pos]) {
                 is_match = false;
 
-                if (state.on_virtual_wildcard) {
+                if (state.on_pivot_wildcard) {
+                    LOG("this is not the pivot break we're looking for, therefore start looking again");
                     state.curr_pos = state.match_position_point;
-                    state.on_virtual_position = true;
+                    state.on_pivot_position = true;
                 }
-            } else if (state.on_virtual_wildcard) {
-                state.on_virtual_position = false;
+            } else if (state.on_pivot_wildcard) {
+                LOG("exactly the match we were looking for, time to match");
+                state.on_pivot_position = false;
                 is_match = true;
             }
         }
@@ -157,27 +163,29 @@ bool Wildcard::match(
             // is_match is false until the following characters are met
             // remains false if they were never met
             is_match = false;
-            state.on_virtual_position = true;
-            state.on_virtual_wildcard = true;
+            state.on_pivot_position = true;
+            state.on_pivot_wildcard = true;
             state.match_position_point = state.curr_pos;
         }
         
         if (state.curr_sign == 2 && !state.take_next_literally) {
+            LOG("gonna begin capturing at this position >> " << state.curr_pos);
             state.curr_pos++;
             if (!pattern[state.curr_pos] && is_match == true) {
                 // If there is nothing after ?,
                 // anything that comes will be valid anyways, so set
                 // is_match to true and capture everything next then break
                 state.captures.push_back(std::string());
-                state.captures.back() += compare.substr(state.virtual_curr_pos);
+                state.captures.back() += compare.substr(state.pivot_curr_pos);
                 break;
+                LOG("nothing after ?, capture everything left and exit");
             }
 
             // is_match is false until the following characters are met
             // remains false if they were never met
             is_match = false;
-            state.on_virtual_position = true;
-            state.on_virtual_wildcard = true;
+            state.on_pivot_position = true;
+            state.on_pivot_wildcard = true;
             state.is_capturing = true;
             state.match_position_point = state.curr_pos;
 
@@ -185,24 +193,36 @@ bool Wildcard::match(
         }
 
         if (state.curr_sign == 3 && !state.take_next_literally) {
-            if (!compare[state.virtual_curr_pos]) {
+            if (!compare[state.pivot_curr_pos]) {
                 is_match = false;
             }
         }
 
         if (state.curr_sign == 4 && !state.take_next_literally) {
+            LOG("we're gonna take next literally");
             state.take_next_literally = true;
             // Skip this one and continue on the next
             state.curr_pos++;
+
+            // If this is next to % or ?, the character the backslash is escaping
+            // should be the match point, not the backslash itself
+            if (state.last_sign == 1 || state.last_sign == 2) {
+                state.match_position_point = state.curr_pos;
+            }
         }
 
-        if (state.on_virtual_position && state.is_capturing) {
-            state.captures.back() += compare[state.virtual_curr_pos];
+        if (state.on_pivot_position && state.is_capturing) {
+            LOG("we're now capturing >> " << state.curr_pos);
+            LOG("capturing on pivot position >> " << state.pivot_curr_pos);
+            state.captures.back() += compare[state.pivot_curr_pos];
+            LOG("also this is the content that we have captured yet: " << state.captures.back());
+            LOG("in this iteration we have added this >> " << compare[state.pivot_curr_pos]);
         }
 
-        state.virtual_curr_pos++;
-        // Only update current position if we're not on a virtual position.
-        if (!state.on_virtual_position) {
+        state.pivot_curr_pos++;
+        // Only update current position if we're not on a pivot position.
+        if (!state.on_pivot_position) {
+            LOG("we update curr pos cause we're not in a pivot position");
             state.curr_pos++;
         }
     }
@@ -239,6 +259,12 @@ void _test_wildcards() {
     std::vector<std::string> test_m_captures;
     bool test_m = Wildcard::match("?", "everything", test_m_captures);
 
+    std::vector<std::string> test_n_captures;
+    bool test_n = Wildcard::match(".?\\ ", ".classsical-classist the best", test_n_captures);
+
+    std::vector<std::string> test_o_captures;
+    bool test_o = Wildcard::match(".? ", ".classsical-classist the best", test_o_captures);
+
     LOG("abcb == abcb: " << test_a);
     LOG("a_cb == acbc: " << test_b);
     LOG("abcb_ == acbc: " << test_c);
@@ -267,6 +293,14 @@ void _test_wildcards() {
     LOG("? = everything: " << test_m);
     for (std::string capture : test_m_captures) {
         LOG("test_m capture: " << capture);
+    }
+    LOG(".?\\  = .classical-classist the best: " << test_n);
+    for (std::string capture : test_n_captures) {
+        LOG("test_n capture: " << capture);
+    }
+    LOG(".?  = .classical-classist the best: " << test_o);
+    for (std::string capture : test_o_captures) {
+        LOG("test_o capture: " << capture);
     }
 }
 #endif
