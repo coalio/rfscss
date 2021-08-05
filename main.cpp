@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
     // If workspace is equal to argv[1], then the file is in the same directory
     // as the caller
     if (workspace == argv[1]) {
-        // Set the workspace to the current directory_test_wildcards
+        // Set the workspace to the current directory
         workspace = ".";
     }
 
