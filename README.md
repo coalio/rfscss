@@ -77,7 +77,7 @@ The _wildcards_ are:
 
 They resemble the `LIKE` SQL operator, but also introduce a `?` wildcard, used for capturing a part of the selector.
 
-If it conflicts with a wildcard, you can use `\` to escape it. _Wildcards_ are not greedy by default, they will match all of the characters until the first occurrence of the next character.
+If it conflicts with a wildcard, you can use `\` to escape it. _Wildcards_ are not greedy, they will match all of the characters until the next sequence of characters is found.
 
 The following is valid _.rfscss_ syntax:
 
