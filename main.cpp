@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
     // If workspace is equal to argv[1], then the file is in the same directory
     // as the caller
     if (workspace == argv[1]) {
-        // Set the workspace to the current directory_test_wildcards
+        // Set the workspace to the current directory
         workspace = ".";
     }
 
@@ -43,6 +43,10 @@ int main(int argc, char* argv[])
     delim_pos = file_ext.find_last_of(".");
     if (delim_pos != std::string::npos) {
         file_ext = file_ext.substr(delim_pos + 1);
+    } else {
+        // If the file does not have an extension, it is assumed
+        // to be a CSS
+        file_ext = 'scss';
     }
 
     // Open the file
@@ -134,7 +138,7 @@ int main(int argc, char* argv[])
         }
 
         if (selectors_without_match) {
-            std::cout << "rfScss - warning: there are selectors without match in specification, these will be missing.\nmake sure you are specific-enough or declare a '%' or '?' rule" << std::endl;
+            std::cout << "rfscss - warning: there are selectors without match in specification, these will be missing.\nmake sure you are specific-enough or declare a '%' or '?' rule" << std::endl;
         }
 
         std::cout << ". creating imports." << file_ext << " at " << workspace + "/imports." << file_ext << std::endl;
