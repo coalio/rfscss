@@ -72,7 +72,7 @@ The _wildcards_ are:
 
 -   `%`: match zero, one or more characters.
 -   `_`: match one character.
--   `?`: match && capture zero, one or more characters.
+-   `?`: match and capture zero, one or more characters.
 -   `\`: match the next character literally. (escape)
 
 They resemble the `LIKE` SQL operator, but also introduce a `?` wildcard, used for capturing a part of the selector.
