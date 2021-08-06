@@ -28,7 +28,7 @@ As of now, this utility does not support nesting due to lack of time.
 
 There is a detailed tutorial available at <a href="https://coals.live/blog/refactor-large-scss-into-multiple-files">this article</a>
 
-Spawn rfscss and provide the path to a .scss file as a first argument:
+Spawn rfscss and provide the path to a .css/.scss file as a first argument:
 `$ rfscss <path>`
 
 The file will be analized and parsed. If a .rfscss file was not found, it will be generated automatically at the parent directory. This file contains the default refactoring rules which you are supposed to customize after.
