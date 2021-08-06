@@ -26,6 +26,7 @@ As of now, this utility does not support nesting due to lack of time.
 
 <h3 id="usage">Usage</h3>
 
+There is a detailed tutorial available at <a href="https://coals.live/blog/refactor-large-scss-into-multiple-files">this article</a>
 Spawn rfscss and provide the path to a .scss file as a first argument:
 `$ rfscss <path>`
 
