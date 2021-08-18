@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
     } else {
         // If the file does not have an extension, it is assumed
         // to be a CSS
-        file_ext = 'scss';
+        file_ext = "css";
     }
 
     // Open the file
