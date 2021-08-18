@@ -1,32 +1,50 @@
-# rfScss
+# rfscss
 
 This tool parses and refactors CSS or SCSS files
+
+## Index
+
+-   <a href="#about">About</a>
+-   <a href="#usage">Usage</a>
+-   <a href="#build">Build</a>
+-   <a href="#notes">Notes</a>
+-   <a href="#rfscss_file">The .rfscss file</a>
+-   <a href="#constraints">Constraints</a>
 
 ## Why?
 
 I've found myself in the need to convert a 28k+ lines SCSS file (compiled from a CSS) into many different files, because dealing with a file of this size is complicated for the editor.
 
-## About
+<h3 id="about">About</h3>
 
 This utility allows you to refactor the main file, split it into multiple imports or select a specific subset and paste it in a different file, depending in the .rfscss specification
 
-The .rfscss specification contains a set of rules that tell rfScss how to deal with the input code.
+The .rfscss specification contains a set of rules that tell rfscss how to deal with the input code.
 
 SCSS is parsed from a sequence of Unicode code points, without first being converted in a token stream. This utility, however, does not decode into Unicode, instead it directly deals with the sequence of bytes.
 As of now, this utility does not support nesting due to lack of time.
 
-## Usage
+<h3 id="usage">Usage</h3>
 
-```
-Spawn rfScss and provide the path to a .scss file as a first argument:
-- rfscss <path>
+There is a detailed tutorial available at <a href="https://coals.live/blog/refactor-large-scss-into-multiple-files">this article</a>
 
-The file will be analized and parsed. If a .rfscss file was not found, it will be generated automatically at the parent directory. This file will contain the default refactoring rules which you can customize after.
+Spawn rfscss and provide the path to a .css/.scss file as a first argument:
+`$ rfscss <path>`
 
-If a .rfscss file was found, the program will read it and set all of the rules specified in it.
-```
+The file will be analized and parsed. If a .rfscss file was not found, it will be generated automatically at the parent directory. This file contains the default refactoring rules which you are supposed to customize after.
 
-## Constraints
+If a .rfscss file is foun then the program will read it and begin refactoring your file.
+
+<h3 id="build">Build</h3>
+
+To build this utility, you will need CMake 3.12 or above, as well as `make`.
+
+Run the following command to compile the project:
+`cmake . && make`
+
+Alternatively, there is a linux pre-compiled binary available at <a href="https://github.com/coalio/rfscss/releases">releases</a>
+
+<h3 id="notes">Notes</h3>
 
 For cleanliness, intrusive comments in the selector are stripped out always.
 
@@ -46,22 +64,22 @@ For cleanliness, intrusive comments in the selector are stripped out always.
 }
 ```
 
-# The .rfscss file
+<h3 id="rfscss_file">The .rfscss file</h3>
 
-A _.rfscss_ file should contain a sequence of rules. These rules must consist of a _match string_ && an output file path, separated by a right arrow. This file is parsed at the moment of running rfscss && it is expected to be found at the same directory of the main _.scss_ file. A default _.rfscss_ file is generated if it does not exist.
+A _.rfscss_ file should contain a sequence of rules. These rules must consist of a _pattern_ and an output file path, separated by a right arrow. This file is parsed at the moment of running rfscss and it is expected to be found at the same directory of the main _.scss_ file. A default _.rfscss_ file is generated if it does not exist.
 
-The _match string_ is compared against the selectors. All characters must be exact, except for the _wildcards_ where the characters could be any.
+The _pattern_ is compared against the selectors. All characters must be exact, except for the _wildcards_ where the characters could be any.
 
 The _wildcards_ are:
 
 -   `%`: match zero, one or more characters.
 -   `_`: match one character.
--   `?`: match && capture zero, one or more characters.
+-   `?`: match and capture zero, one or more characters.
 -   `\`: match the next character literally. (escape)
 
 They resemble the `LIKE` SQL operator, but also introduce a `?` wildcard, used for capturing a part of the selector.
 
-If it conflicts with a wildcard, you can use `\` to escape it. _Wildcards_ are not greedy by default, they will match all of the characters until the first occurrence of the next character.
+If it conflicts with a wildcard, you can use `\` to escape it. _Wildcards_ are not greedy, they will match all of the characters until the next sequence of characters is found.
 
 The following is valid _.rfscss_ syntax:
 
@@ -89,12 +107,12 @@ These rules will match the following strings accordingly (multiple examples sepa
 anything
 ```
 
-## Constraints
+<h3 id="constraints">Constraints</h3>
 
 The rules are ran in the order they are specified. **The order of the rules does matter**.
 
-In case of multiple `?` _wildcards_ in the same _match string_, they are placed in the order they are captured.
+In case of multiple `?` _wildcards_ in the same _pattern_, the captures are placed in the order they are captured.
 
-If a selector does not match any of the rules specified, it gets assigned a file name && gets placed at the parent directory of the base _.scss_ file.
+If a selector does not match any of the patterns specified in the .rfscss file, this selector **will be ignored**. If you wish to include all selectors/rules, you must be either _very specific_ or include a `#` or `?` rule that will match anything _just in case._
 
 Keep in mind that the right arrow used to separate the rules **also counts as a special character.** If you wish to compare it against a selector you must escape it as `-\>`, otherwise you'll receive an error while parsing the _.rfscss_ file.

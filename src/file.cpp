@@ -10,7 +10,7 @@
 std::vector<char> File::read(std::string file_path) {
     std::ifstream file(file_path);
     if (!file.is_open()) {
-        std::cout << "rfScss - File '" << file_path << "' not found" << std::endl;
+        std::cout << "rfscss - File '" << file_path << "' not found" << std::endl;
     }
 
     std::ostringstream ss;
@@ -35,7 +35,6 @@ void File::place_in(std::string file_path, std::string content) {
         int ret = mkdir(folder.c_str(), 0777);
     }
 
-    // std::cout << "rfScss - Saving '" << file_path << "'" << std::endl;
     std::ofstream file;
     file.open(file_path, std::ios::out | std::ios::app);
     if (file.fail()) {
