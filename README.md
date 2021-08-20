@@ -17,7 +17,7 @@ I've found myself in the need to convert a 28k+ lines SCSS file (compiled from a
 
 <h3 id="about">About</h3>
 
-This utility allows you to refactor the main file, split it into multiple imports or select a specific subset and paste it in a different file, depending in the .rfscss specification. It also allows you to steal style rules from a stylesheet source.
+This utility allows you to refactor the main file, split it into multiple imports or select a specific subset and paste it in a different file, depending in the .rfscss specification. It allows you to steal style rules from a stylesheet source.
 
 The .rfscss specification contains a set of rules that tell rfscss how to deal with the input code.
 
