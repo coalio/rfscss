@@ -33,8 +33,6 @@ Spawn rfscss and provide the path to a .css/.scss file as a first argument:
 
 The file will be analized and parsed. If a .rfscss file was not found, it will be generated automatically at the parent directory. This file contains the default refactoring rules which you are supposed to customize after.
 
-If a .rfscss file is foun then the program will read it and begin refactoring your file.
-
 <h3 id="build">Build</h3>
 
 To build this utility, you will need CMake 3.12 or above, as well as `make`.
