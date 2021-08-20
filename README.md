@@ -19,10 +19,7 @@ I've found myself in the need to convert a 28k+ lines SCSS file (compiled from a
 
 This utility allows you to refactor the main file, split it into multiple imports or select a specific subset and paste it in a different file, depending in the .rfscss specification. It allows you to steal style rules from a stylesheet source.
 
-The .rfscss specification contains a set of rules that tell rfscss how to deal with the input code.
-
-SCSS is parsed from a sequence of Unicode code points, without first being converted in a token stream. This utility, however, does not decode into Unicode, instead it directly deals with the sequence of bytes.
-As of now, this utility does not support nesting due to lack of time.
+The .rfscss specification contains a set of rules that tell rfscss how to deal with the input code. As of now, this utility does not support nested rules due to lack of time.
 
 <h3 id="usage">Usage</h3>
 
