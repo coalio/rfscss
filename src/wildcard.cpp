@@ -259,10 +259,10 @@ void _test_wildcards() {
     bool test_m = Wildcard::match("?", "everything", test_m_captures);
 
     std::vector<std::string> test_n_captures;
-    bool test_n = Wildcard::match(".?\\ ", ".classsical-classist the best", test_n_captures);
+    bool test_n = Wildcard::match(".?\\ ", ".class-class class", test_n_captures);
 
     std::vector<std::string> test_o_captures;
-    bool test_o = Wildcard::match(".? ", ".classsical-classist the best", test_o_captures);
+    bool test_o = Wildcard::match(".? ", ".class-class class", test_o_captures);
 
     LOG("abcb == abcb: " << test_a);
     LOG("a_cb == acbc: " << test_b);
@@ -293,11 +293,11 @@ void _test_wildcards() {
     for (std::string capture : test_m_captures) {
         LOG("test_m capture: " << capture);
     }
-    LOG(".?\\  = .classical-classist the best: " << test_n);
+    LOG(".?\\  = .class-class class: " << test_n);
     for (std::string capture : test_n_captures) {
         LOG("test_n capture: " << capture);
     }
-    LOG(".?  = .classical-classist the best: " << test_o);
+    LOG(".?  = .class-class class: " << test_o);
     for (std::string capture : test_o_captures) {
         LOG("test_o capture: " << capture);
     }
