@@ -238,7 +238,7 @@ bool Parser::check_parsing_errors() {
 void Parser::parse_input(
     std::string file_path,
     std::string workspace,
-    std::vector<char> input 
+    std::vector<char> input
 ) {
     for (auto c : input) {
         this->next(c);

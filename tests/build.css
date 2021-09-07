@@ -1,8 +1,8 @@
-#id_selector {
+#id_selector .inside-id_selector {
     color: blue;
 }
 
-.selector-1{
+.selector-1 {
     color: red;
 }
 

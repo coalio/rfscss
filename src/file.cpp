@@ -10,7 +10,7 @@
 std::vector<char> File::read(std::string file_path) {
     std::ifstream file(file_path);
     if (!file.is_open()) {
-        std::cout << "rfscss - File '" << file_path << "' not found" << std::endl;
+        std::cout << "rfscss - file '" << file_path << "' not found" << std::endl;
     }
 
     std::ostringstream ss;
