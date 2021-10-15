@@ -3,15 +3,16 @@
 #include <vector>
 #include "debug.h"
 
+static std::vector<std::string> DEFAULT_VECTOR;
+
 namespace Wildcard {
     int8_t check_char(char c);
     // Compares the <pattern> to a <compare> string
     // o(NM) complexity: N compare size M pattern size
-    bool match(std::string pattern, std::string compare);
     bool match(
         std::string pattern,
         std::string compare,
-        std::vector<std::string> &captures
+        std::vector<std::string> &captures = DEFAULT_VECTOR
     );
 
     struct WildcardState {

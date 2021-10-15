@@ -9,3 +9,12 @@ tests/*
 !tests/build.*
 !tests/.rfscss
 rfscss
+/*.css
+
+# Debugs
+specific_testing
+*.d
+
+# Not implemented yet
+dev/linotify
+.gitmodules

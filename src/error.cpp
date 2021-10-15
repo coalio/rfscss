@@ -3,7 +3,7 @@
 #include "utils.h"
 
 void Error::print(std::string file_path) {
-    std::cout << "rfscss - Unable to refactor file: " << file_path << std::endl; 
+    std::cout << "rfscss - Unable to parse file: " << file_path << std::endl; 
     std::cout << Utils::rtrim(this->message);
     // (Of course, the last selector is not necessarily the last one in the file,
     // but rather the last one that was being parsed)

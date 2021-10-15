@@ -17,6 +17,7 @@ int8_t Parser::check_char(char c) {
     // Return 5 if the character is an asterisk
     // Return 6 if the character is a newline
     // Return 7 if the character is a semicolon
+    // Return 8 if the character is a number sign
 
     if (c == '.') {
         return 0;
@@ -34,6 +35,8 @@ int8_t Parser::check_char(char c) {
         return 6;
     } else if (c == ';') {
         return 7;
+    }  else if (c == '#') {
+        return 8;
     }
 
     return -1;
@@ -150,7 +153,8 @@ bool Parser::is_rule_or_selector() {
 
 bool Parser::is_opening_brace() {
     // If the character is an opening brace, capture all the characters until the closing brace
-    if (state->curr_sign == 1) {
+    // Discard it if its preceded by # (interpolation)
+    if (state->curr_sign == 1 && state->last_char != '#') {
         state->capturing_block = true;
         // Set getting selector to false to denote that we are now getting the content
         state->getting_selector = false;
@@ -238,7 +242,7 @@ bool Parser::check_parsing_errors() {
 void Parser::parse_input(
     std::string file_path,
     std::string workspace,
-    std::vector<char> input 
+    std::vector<char> input
 ) {
     for (auto c : input) {
         this->next(c);
