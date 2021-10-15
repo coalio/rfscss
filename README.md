@@ -1,6 +1,6 @@
 # rfscss
 
-This tool parses and refactors CSS or SCSS files
+This tool allows you to extract style rules and refactor large stylesheets.
 
 ## Index
 
@@ -17,12 +17,9 @@ I've found myself in the need to convert a 28k+ lines SCSS file (compiled from a
 
 <h3 id="about">About</h3>
 
-This utility allows you to refactor the main file, split it into multiple imports or select a specific subset and paste it in a different file, depending in the .rfscss specification
+This utility allows you to refactor the main file, split it into multiple imports or select a specific subset and paste it in a different file, depending in the .rfscss specification. It allows you to steal style rules from a stylesheet source.
 
-The .rfscss specification contains a set of rules that tell rfscss how to deal with the input code.
-
-SCSS is parsed from a sequence of Unicode code points, without first being converted in a token stream. This utility, however, does not decode into Unicode, instead it directly deals with the sequence of bytes.
-As of now, this utility does not support nesting due to lack of time.
+The .rfscss specification contains a set of rules that tell rfscss how to deal with the input code. As of now, this utility does not support nested rules due to lack of time.
 
 <h3 id="usage">Usage</h3>
 
@@ -32,8 +29,6 @@ Spawn rfscss and provide the path to a .css/.scss file as a first argument:
 `$ rfscss <path>`
 
 The file will be analized and parsed. If a .rfscss file was not found, it will be generated automatically at the parent directory. This file contains the default refactoring rules which you are supposed to customize after.
-
-If a .rfscss file is foun then the program will read it and begin refactoring your file.
 
 <h3 id="build">Build</h3>
 

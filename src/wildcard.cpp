@@ -23,7 +23,6 @@ int8_t Wildcard::check_char(char c) {
     return 0;
 }
 
-
 bool Wildcard::match(
     std::string pattern,
     std::string compare,
@@ -33,11 +32,11 @@ bool Wildcard::match(
     bool is_match = true;
     bool ignore_captures;
 
-    if (captures == DEFAULT_VECTOR) {
+    if (&captures == &DEFAULT_VECTOR) {
         ignore_captures = true;
     }
 
-    while (state.pivot_curr_pos < compare.size()) {
+    while (state.pivot_curr_pos <= compare.size() - 1) {
         if (state.curr_pos > 0) {
             state.last_sign = state.curr_sign;
         }
@@ -45,15 +44,34 @@ bool Wildcard::match(
         if (state.curr_pos > pattern.size() - 1) {
             if (state.pivot_curr_pos < compare.size()) {
                 is_match = false;
-                LOG("We are now leaving and the compare didnt reach its end, this is not an absolute match");
             }
 
-            LOG("Maybe this thing is done parsing");
             break;
         }
         
         state.curr_sign = check_char(pattern[state.curr_pos]);
+        LOG("debug: " << pattern << "\n\7compare: " << compare << " pivot: " << state.pivot_curr_pos << " curr: " << state.curr_pos << " last: " << state.last_sign << " curr_sign: " << state.curr_sign);
+        LOG("match: " << is_match);
+        LOG("current pattern char:" << pattern[state.curr_pos]);
+        LOG("current compare char:" << compare[state.pivot_curr_pos]);
+        LOG(std::endl);
+
+        if (state.curr_sign == 4 && !state.take_next_literally) {
+            LOG("Entered sign 4");
+            state.take_next_literally = true;
+            // Skip this one and continue on the next
+            state.curr_pos++;
+
+            // If this is next to % or ?, the character the backslash is escaping
+            // should be the match point, not the backslash itself
+            if (state.last_sign == 1 || state.last_sign == 2) {
+                state.match_position_point = state.curr_pos;
+            }
+        }
+        
         if (state.curr_sign == 0 || state.take_next_literally) {
+            state.take_next_literally = false;
+            LOG("Entered sign 0");
             // The "pivot" current position does not match the compare
             // current position
             if (pattern[state.curr_pos] != compare[state.pivot_curr_pos]) {
@@ -65,6 +83,7 @@ bool Wildcard::match(
                 } else {
                     // If it fails an absolute exact match without a wildcard, the string
                     // will never match the pattern
+                    LOG("Looks like we failed an absolute match");
                     break;
                 }
             } else if (state.on_pivot_wildcard) {
@@ -74,11 +93,16 @@ bool Wildcard::match(
         }
 
         if (state.curr_sign == 1 && !state.take_next_literally) {
+            LOG("Entered sign 1");
+            if (!is_match && state.last_sign == 0) {
+                // If the current character is a %, and the string is not a match,
+                // the  string will never match the pattern
+                break;
+            }
+
             state.curr_pos++;
-            if (!pattern[state.curr_pos] && is_match == true) {
-                // If there is nothing after %,
-                // anything that comes will be valid anyways, so set
-                // is_match to true then break
+            if (!pattern[state.curr_pos]) {
+                // If there is nothing after %, exit the loop
                 break;
             }
 
@@ -91,6 +115,11 @@ bool Wildcard::match(
         }
         
         if (state.curr_sign == 2 && !state.take_next_literally) {
+            LOG("Entered sign 2");
+            if (!is_match && state.last_sign == 0) {
+                break;
+            }
+            
             state.curr_pos++;
             if (!pattern[state.curr_pos] && is_match == true && !ignore_captures) {
                 // If there is nothing after ?,
@@ -115,27 +144,28 @@ bool Wildcard::match(
         }
 
         if (state.curr_sign == 3 && !state.take_next_literally) {
+            LOG("Entered sign 3");
             if (!compare[state.pivot_curr_pos]) {
                 is_match = false;
             }
         }
 
-        if (state.curr_sign == 4 && !state.take_next_literally) {
-            state.take_next_literally = true;
-            // Skip this one and continue on the next
-            state.curr_pos++;
-
-            // If this is next to % or ?, the character the backslash is escaping
-            // should be the match point, not the backslash itself
-            if (state.last_sign == 1 || state.last_sign == 2) {
-                state.match_position_point = state.curr_pos;
-            }
-        }
 
         if (state.on_pivot_position && state.is_capturing) {
             state.captures.back() += compare[state.pivot_curr_pos];
         }
 
+        LOG("is_match: " << is_match);
+        LOG("on_pivot_position: " << state.on_pivot_position);
+        LOG("on_pivot_wildcard: " << state.on_pivot_wildcard);
+        LOG("match_position_point: " << state.match_position_point);
+        LOG("curr_pos: " << state.curr_pos);
+        LOG("pivot_curr_pos: " << state.pivot_curr_pos);
+        LOG("last_sign: " << state.last_sign);
+        LOG("curr_sign: " << state.curr_sign);
+        LOG("is_capturing: " << state.is_capturing);
+        LOG("take_next_literally: " << state.take_next_literally);
+        LOG("finish iteration no. " << state.pivot_curr_pos << std::endl);
         state.pivot_curr_pos++;
         // Only update current position if we're not on a pivot position.
         if (!state.on_pivot_position) {
@@ -144,6 +174,12 @@ bool Wildcard::match(
     }
 
     captures = state.captures;
+
+    // If we left the loop and the pattern is still not finished, set is_match to false
+    if (state.curr_pos < pattern.size() - 1) {
+        is_match = false;
+    }
+
     return is_match;
 }
 
@@ -176,10 +212,10 @@ void _test_wildcards() {
     bool test_m = Wildcard::match("?", "everything", test_m_captures);
 
     std::vector<std::string> test_n_captures;
-    bool test_n = Wildcard::match(".?\\ ", ".classical-class the best", test_n_captures);
+    bool test_n = Wildcard::match(".?\\ ", ".class-class class", test_n_captures);
 
     std::vector<std::string> test_o_captures;
-    bool test_o = Wildcard::match(".? ", ".classical-class the best", test_o_captures);
+    bool test_o = Wildcard::match(".? ", ".class-class class", test_o_captures);
 
     LOG("abcb == abcb: " << test_a);
     LOG("a_cb == acbc: " << test_b);
@@ -210,11 +246,11 @@ void _test_wildcards() {
     for (std::string capture : test_m_captures) {
         LOG("test_m capture: " << capture);
     }
-    LOG(".?\\  = .classical-classist the best: " << test_n);
+    LOG(".?\\  = .class-class class: " << test_n);
     for (std::string capture : test_n_captures) {
         LOG("test_n capture: " << capture);
     }
-    LOG(".?  = .classical-classist the best: " << test_o);
+    LOG(".?  = .class-class class: " << test_o);
     for (std::string capture : test_o_captures) {
         LOG("test_o capture: " << capture);
     }
