@@ -10,6 +10,7 @@ This tool allows you to extract style rules and refactor large stylesheets.
 - <a href="#notes">Notes</a>
 - <a href="#rfscss_file">The .rfscss file</a>
 - <a href="#constraints">Constraints</a>
+- <a href="#contributing">Contributing</a>
 
 <h3 id="about">About</h3>
 
