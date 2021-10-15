@@ -122,3 +122,7 @@ In case of multiple `?` _wildcards_ in the same _pattern_, the captures are plac
 If a selector does not match any of the patterns specified in the rfscss, this selector **will be ignored**. If you wish to include all selectors/rules, you must be either _very specific_ or include a `%` or `?` rule that will match anything _just in case._
 
 Keep in mind that the right arrow used to separate the rules **also counts as a special character.** If you wish to compare it against a selector you must escape it as `-\>`.
+
+<h3 id="contributing">Contributing</h3>
+
+If you wish to contribute to this project, please refer to <a href="https://github.com/coalio/rfscss/blob/master/CONTRIBUTING.md">this document</a>.
