@@ -34,10 +34,15 @@ Usage: rfscss <file> [options: -l <path>, -i <rfscss>, -e <path>]
 ```
 
 `--tidy [-t]`: The selector will be split into multiple segments separated by underscore, special characters removed.
+
 `--enable-warnings [-w]`: rfscss will let you know if there is something that could go wrong.
+
 `--list [-l]`: Parses all of the selectors and rules in the file. For clearness, `selector` refers to `(.+?)\s*[\{;]` at the root level.
+
 `--inline-rfscss [-i]`: Use the rfscss provided in the command. Takes precedence over the .rfscss file.
+
 `--export-imports [-e]`: Writes an @import rule for every single selector and saves it at the path specified.
+
 
 rfscss does not create directories recursively (it creates up to 1 level), so every path you specify should already exist.
 
