@@ -53,8 +53,6 @@ To build this utility, you will need CMake 3.12 or above, as well as `make`.
 Run the following command to compile the project:
 `bash build.sh`
 
-Alternatively, there is a linux pre-compiled binary available at <a href="https://github.com/coalio/rfscss/releases">releases</a>
-
 <h3 id="notes">Notes</h3>
 
 For cleanliness, intrusive comments in the selector are stripped out always.
