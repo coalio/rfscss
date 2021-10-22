@@ -51,7 +51,7 @@ rfscss does not create directories recursively (it creates up to 1 level), so ev
 To build this utility, you will need CMake 3.12 or above, as well as `make`.
 
 Run the following command to compile the project:
-`cmake . && make`
+`bash build.sh`
 
 Alternatively, there is a linux pre-compiled binary available at <a href="https://github.com/coalio/rfscss/releases">releases</a>
 
