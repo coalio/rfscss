@@ -41,10 +41,10 @@ Usage: rfscss <file> [options: -l <path>, -i <rfscss>, -e <path>]
 
 `--inline-rfscss [-i]`: Use the rfscss provided in the command. Takes precedence over the .rfscss file.
 
-`--export-imports [-e]`: Writes an @import rule for every single selector and saves it at the path specified.
+`--export-imports [-e]`: Writes an @import rule for every single output file and saves it at the path specified.
 
 
-rfscss does not create directories recursively (it creates up to 1 level), so every path you specify should already exist.
+rfscss does not create directories recursively, so every path you specify should already exist. However, rfscss will create the folder at the base directory if it does not exist. This assures a single level directory creation.
 
 <h3 id="build">Build</h3>
 
