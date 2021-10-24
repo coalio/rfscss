@@ -227,7 +227,7 @@ bool Parser::check_parsing_errors() {
         error->at_char = state->selector_pos.back();
         error->column = 1; 
         error->message = error_msg;
-        error->kind = "Unbalanced braces"; 
+        error->kind = "Unterminated comment"; 
         error->line = state->selector_line.back();
 
         // Set the state to error
