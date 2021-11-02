@@ -14,7 +14,7 @@ This tool allows you to extract style rules and refactor large stylesheets.
 
 <h3 id="about">About</h3>
 
-This utility allows you to refactor the main file, split it into multiple imports or select a specific subset and paste it in a different file, depending in the rfscss specification.
+This utility allows you to refactor a SCSS/CSS stylesheet, split it into multiple files or extract a specific subset into in a different file, depending in the rfscss specification.
 
 The rfscss specification contains a set of rules that tell rfscss how to deal with the input code. The rules are applied in the order they are defined.
 
