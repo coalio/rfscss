@@ -20,7 +20,7 @@ The rfscss specification contains a set of rules that tell rfscss how to deal wi
 
 <h3 id="usage">Usage</h3>
 
-There is a detailed tutorial available at <a href="https://coals.live/blog/refactor-large-scss-into-multiple-files">this article</a>
+There is a detailed guide available at <a href="https://coals.live/blog/refactor-large-scss-into-multiple-files">this article</a>
 
 If you run rfscss without arguments, the following information will be shown:
 
@@ -42,7 +42,6 @@ Usage: rfscss <file> [options: -l <path>, -i <rfscss>, -e <path>]
 `--inline-rfscss [-i]`: Use the rfscss provided in the command. Takes precedence over the .rfscss file.
 
 `--export-imports [-e]`: Writes an @import rule for every single output file and saves it at the path specified.
-
 
 rfscss does not create directories recursively, so every path you specify should already exist. However, rfscss will create the folder at the base directory if it does not exist. This assures a single level directory creation.
 
