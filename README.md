@@ -25,7 +25,7 @@ There is a detailed guide available at <a href="https://coals.live/blog/refactor
 If you run rfscss without arguments, the following information will be shown:
 
 ```
-Usage: rfscss <file> [options: -l <path>, -i <rfscss>, -e <path>]
+Usage: rfscss <file> [ -l <path> | -i <rfscss> | -e <path> | -w | -t ]
   --tidy [-t]: tidy the selector when using ? to extract into a file.
   --enable-warnings [-w]: enable warnings.
   --list [-l] <path>: list all of the selectors in a file.
