@@ -45,8 +45,7 @@ public:
     bool check_parsing_errors();
 
     void parse_input(
-        std::string file_path, 
-        std::string workspace, 
+        std::string workspace,
         std::vector<char> input
     );
 };

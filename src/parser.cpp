@@ -129,7 +129,7 @@ bool Parser::is_rule_or_selector() {
     // If we're expecting a selector or rule &&
     // current character is not a whitespace
     if (
-        state->expecting_rule_or_selector && 
+        state->expecting_rule_or_selector &&
         // state->curr_sign == 0
         !Utils::is_whitespace(state->curr_char)
     ) {
@@ -144,7 +144,7 @@ bool Parser::is_rule_or_selector() {
         // Set getting selector to true so that the next character is added to the selector
         state->getting_selector = true;
         state->expecting_rule_or_selector = false;
-        
+
         return true;
     }
 
@@ -200,14 +200,14 @@ bool Parser::check_parsing_errors() {
         char error_msg[100]; sprintf(
             error_msg, ERR_UNBALANCED_BRACES, state->selectors.back().c_str()
         );
-        
+
         Error * error = new Error();
-        
+
         error->at_char = state->selector_pos.back();
-        error->column = 1; 
+        error->column = 1;
         error->message = error_msg;
-        error->kind = "Unbalanced braces"; 
-        error->line = state->selector_line.back(); 
+        error->kind = "Unbalanced braces";
+        error->line = state->selector_line.back();
 
         // Set the state to error
         state->error = error;
@@ -223,11 +223,11 @@ bool Parser::check_parsing_errors() {
         );
 
         Error * error = new Error();
-        
+
         error->at_char = state->selector_pos.back();
-        error->column = 1; 
+        error->column = 1;
         error->message = error_msg;
-        error->kind = "Unterminated comment"; 
+        error->kind = "Unterminated comment";
         error->line = state->selector_line.back();
 
         // Set the state to error
@@ -235,12 +235,11 @@ bool Parser::check_parsing_errors() {
 
         return true;
     }
-    
+
     return false;
 }
 
 void Parser::parse_input(
-    std::string file_path,
     std::string workspace,
     std::vector<char> input
 ) {
