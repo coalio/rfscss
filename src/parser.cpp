@@ -133,7 +133,7 @@ bool Parser::is_rule_or_selector() {
         // state->curr_sign == 0
         !Utils::is_whitespace(state->curr_char)
     ) {
-        state->selectors.push_back(std::string());
+        state->selectors.emplace_back("");
         state->selectors.back() += state->curr_char;
         // Assign this selector an id && push it to the selectors_id vector
         state->selector_ids.push_back(state->selectors.size() - 1);
@@ -159,7 +159,7 @@ bool Parser::is_opening_brace() {
         // Set getting selector to false to denote that we are now getting the content
         state->getting_selector = false;
         // Add a new string to state->content
-        state->content.push_back(std::string());
+        state->content.emplace_back("");
         // Increment level by one
         state->levels++;
 
@@ -175,7 +175,7 @@ void Parser::push_to_selector() {
     if (state->curr_sign == 7) {
         state->getting_selector = false;
         state->expecting_rule_or_selector = true;
-        state->content.push_back(std::string());
+        state->content.emplace_back("");
     }
 }
 

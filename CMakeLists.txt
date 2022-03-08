@@ -9,4 +9,14 @@ add_subdirectory(src)
 target_link_libraries(${PROJECT_NAME} PUBLIC src)
 target_include_directories(${PROJECT_NAME} PRIVATE src)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
+
+# Install target
+if (NOT BIN_INSTALL_DIR)
+    set(BIN_INSTALL_DIR bin)
+endif ()
+
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION ${BIN_INSTALL_DIR}
+)
+
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "rfscss")

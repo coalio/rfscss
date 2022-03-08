@@ -19,13 +19,13 @@ int main(int argc, char* argv[])
     umask(0);
 
     if (argc < 2) {
-        std::cerr << "Usage: rfscss <file | pipe> [ -l <path> | -i <rfscss> | -e <path> | -w | -t ]\n";
+        std::cerr << "Usage: rfscss <file | -p> [ -l <path> | -i <rfscss> | -e <path> | -w | -t ]\n";
+        std::cerr << "  --from-pipe [-p]: read from stdin.\n";
         std::cerr << "  --tidy [-t]: tidy the selector when using ? to extract into a file.\n";
         std::cerr << "  --enable-warnings [-w]: enable warnings.\n";
         std::cerr << "  --list [-l] <path>: list all of the selectors in a file.\n";
         std::cerr << "  --inline-rfscss [-i] <rfscss>: use <rfscss> as the specification.\n";
         std::cerr << "  --export-imports [-e] <path>: write @import rules for every extracted rule, and save it at <path>\n";
-        std::cerr << "  --from-pipe [-p]: read from stdin.\n";
         std::cerr << "\n";
 
         return 1;
