@@ -129,11 +129,11 @@ bool Parser::is_rule_or_selector() {
     // If we're expecting a selector or rule &&
     // current character is not a whitespace
     if (
-        state->expecting_rule_or_selector && 
+        state->expecting_rule_or_selector &&
         // state->curr_sign == 0
         !Utils::is_whitespace(state->curr_char)
     ) {
-        state->selectors.push_back(std::string());
+        state->selectors.emplace_back("");
         state->selectors.back() += state->curr_char;
         // Assign this selector an id && push it to the selectors_id vector
         state->selector_ids.push_back(state->selectors.size() - 1);
@@ -144,7 +144,7 @@ bool Parser::is_rule_or_selector() {
         // Set getting selector to true so that the next character is added to the selector
         state->getting_selector = true;
         state->expecting_rule_or_selector = false;
-        
+
         return true;
     }
 
@@ -159,7 +159,7 @@ bool Parser::is_opening_brace() {
         // Set getting selector to false to denote that we are now getting the content
         state->getting_selector = false;
         // Add a new string to state->content
-        state->content.push_back(std::string());
+        state->content.emplace_back("");
         // Increment level by one
         state->levels++;
 
@@ -175,7 +175,7 @@ void Parser::push_to_selector() {
     if (state->curr_sign == 7) {
         state->getting_selector = false;
         state->expecting_rule_or_selector = true;
-        state->content.push_back(std::string());
+        state->content.emplace_back("");
     }
 }
 
@@ -200,14 +200,14 @@ bool Parser::check_parsing_errors() {
         char error_msg[100]; sprintf(
             error_msg, ERR_UNBALANCED_BRACES, state->selectors.back().c_str()
         );
-        
+
         Error * error = new Error();
-        
+
         error->at_char = state->selector_pos.back();
-        error->column = 1; 
+        error->column = 1;
         error->message = error_msg;
-        error->kind = "Unbalanced braces"; 
-        error->line = state->selector_line.back(); 
+        error->kind = "Unbalanced braces";
+        error->line = state->selector_line.back();
 
         // Set the state to error
         state->error = error;
@@ -223,11 +223,11 @@ bool Parser::check_parsing_errors() {
         );
 
         Error * error = new Error();
-        
+
         error->at_char = state->selector_pos.back();
-        error->column = 1; 
+        error->column = 1;
         error->message = error_msg;
-        error->kind = "Unterminated comment"; 
+        error->kind = "Unterminated comment";
         error->line = state->selector_line.back();
 
         // Set the state to error
@@ -235,12 +235,11 @@ bool Parser::check_parsing_errors() {
 
         return true;
     }
-    
+
     return false;
 }
 
 void Parser::parse_input(
-    std::string file_path,
     std::string workspace,
     std::vector<char> input
 ) {

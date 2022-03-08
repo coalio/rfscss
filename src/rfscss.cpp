@@ -24,7 +24,7 @@ Specification rfscss_spec::parse_spec(std::shared_ptr<State> state, std::vector<
             if (state->expecting_rule_or_selector && !Utils::is_whitespace(state->curr_char)) {
                 state->getting_selector = true;
                 state->expecting_rule_or_selector = false;
-                spec.match_strings.push_back(std::string());
+                spec.match_strings.emplace_back("");
             }
 
             if (state->getting_selector) {
@@ -38,7 +38,7 @@ Specification rfscss_spec::parse_spec(std::shared_ptr<State> state, std::vector<
                     spec.match_strings.back()
                         .substr(0, spec.match_strings.back().size() - 2);
 
-                spec.output_paths.push_back(std::string());
+                spec.output_paths.emplace_back("");
             }
 
             if (state->curr_char == '\n') {

@@ -19,7 +19,8 @@ int main(int argc, char* argv[])
     umask(0);
 
     if (argc < 2) {
-        std::cerr << "Usage: rfscss <file> [ -l <path> | -i <rfscss> | -e <path> | -w | -t ]\n";
+        std::cerr << "Usage: rfscss <file | -p> [ -l <path> | -i <rfscss> | -e <path> | -w | -t ]\n";
+        std::cerr << "  --from-pipe [-p]: read from stdin.\n";
         std::cerr << "  --tidy [-t]: tidy the selector when using ? to extract into a file.\n";
         std::cerr << "  --enable-warnings [-w]: enable warnings.\n";
         std::cerr << "  --list [-l] <path>: list all of the selectors in a file.\n";
@@ -30,37 +31,10 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    std::string file_path = argv[1];
-    std::string file_name = file_path;
-    std::string workspace = file_path;
-
-    std::string::size_type delim_pos = workspace.find_last_of("/");
-    if (delim_pos != std::string::npos) {
-        workspace = workspace.substr(0, delim_pos);
-    }
-
-    // If workspace is equal to file_path, then the file is in the same directory
-    if (workspace == file_path) {
-        // Set the workspace to the current directory
-        workspace = ".";
-    }
-
-    // Get the file name excluding path
-    delim_pos = file_name.find_last_of("/");
-    if (delim_pos != std::string::npos) {
-        file_name = file_name.substr(delim_pos + 1);
-    }
-
-    // Open the file
-    std::vector<char> input = File::read(file_path);
-    // Check if input is empty
-    if (input.empty()) {
-        return 1;
-    }
 
     // Get options
     std::map<std::string, std::string> options;
-    for (int i = 2; i < argc; i++) {
+    for (int i = 1; i < argc; i++) {
         std::string arg = argv[i];
         if (arg == "--tidy" || arg == "-t") {
             options["tidy"] = "true";
@@ -90,9 +64,50 @@ int main(int argc, char* argv[])
             }
 
             options["list"] = std::string(argv[i + 1]);
+        } else if (arg == "--from-pipe" || arg == "-p") {
+            options["from-pipe"] = "true";
         }
     }
 
+    std::string file_path = argv[1];
+    std::string file_name;
+    std::string workspace;
+
+    // Declare the input vector
+    std::vector<char> input;
+    if (options.count("from-pipe")) {
+        // Read all from stdin
+        workspace = '.';
+        file_name = "stdin";
+        file_path = "pipe";
+        input = std::vector<char>(std::istreambuf_iterator<char>(std::cin), {});
+    } else {
+        workspace = file_path;
+        // Read from file
+        std::string::size_type delim_pos = workspace.find_last_of("/");
+        if (delim_pos != std::string::npos) {
+            workspace = workspace.substr(0, delim_pos);
+        }
+
+        // If workspace is equal to file_path, then the file is in the same directory
+        if (workspace == file_path) {
+            // Set the workspace to the current directory
+            workspace = '.';
+        }
+
+        // Get the file name excluding path
+        delim_pos = file_name.find_last_of("/");
+        if (delim_pos != std::string::npos) {
+            file_name = file_name.substr(delim_pos + 1);
+        }
+
+        input = File::read(file_path);
+    }
+
+    // Check if input is empty
+    if (input.empty()) {
+        return 1;
+    }
     // Open the .rfscss specification. Should be available at "workspace"
     struct Specification spec;
     bool is_spec_available = true;
@@ -118,7 +133,7 @@ int main(int argc, char* argv[])
         std::cout << "rfscss - no specification provided.\n"
                         "run rfscss with flag --list [-l] to list all "
                         "of the rules in the file" << std::endl;
-        
+
         return 1;
     }
 
@@ -138,7 +153,7 @@ int main(int argc, char* argv[])
     std::unique_ptr<Parser> parser(new Parser(state));
 
     // Parse the file
-    parser->parse_input(file_path, workspace, input);
+    parser->parse_input(workspace, input);
     if (state->error->kind != "") {
         state->error->print(file_path);
         return 1;
@@ -150,12 +165,12 @@ int main(int argc, char* argv[])
         bool is_match = false;
         bool selectors_without_match = false;
         int captured_selectors_amount = 0;
-        std::vector<std::string> captures; 
+        std::vector<std::string> captures;
         std::vector<std::string> import_paths;
         for (int style_rule_index = 0; style_rule_index < state->selectors.size(); style_rule_index++) {
             std::string style_rule_name = Utils::trim(state->selectors[style_rule_index]);
             std::string content = state->selectors[style_rule_index];
-            
+
             if (state->content[style_rule_index] != "") {
                 content += + "{" + state->content[style_rule_index] + "}\n";
             }
@@ -176,7 +191,7 @@ int main(int argc, char* argv[])
                                 } else {
                                     file_path.replace(i, 1, captures[0]);
                                 }
-                                
+
                                 if (options.count("warnings")) {
                                     // Copy file path into a new string and tidy it
                                     // If its not a valid path, warn the user
@@ -208,7 +223,7 @@ int main(int argc, char* argv[])
                 selectors_without_match = true;
             }
         }
-        
+
         if (selectors_without_match && options.count("warnings")) {
             std::cerr << "rfscss - warning: there are rules without match in specification, these will be missing.\ndeclare a '%' or '?' rule if you wish to capture all" << std::endl;
         }
@@ -225,11 +240,11 @@ int main(int argc, char* argv[])
 
         std::cout << "rfscss - captured " << captured_selectors_amount << " of " << state->selectors.size() << " selectors" << std::endl;
     }
-    
+
     if (build_spec) {
         // Write the specification
         std::variant<std::stringstream, std::string> specification_content;
-        
+
         for (int i = 0; i < state->selectors.size(); i++) {
             std::string style_rule_name = state->selectors[i];
 

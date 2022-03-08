@@ -6,13 +6,12 @@ if arg[1] == "--silent" then
   table.remove(arg, 1)
 end
 
-EXECUTABLE_PATH = "../../rfscss"
-package.cpath = package.cpath .. ";?/?.so"
+EXECUTABLE_PATH = "rfscss"
 
 local rprint = function(prefix, str, id)
   io.stdout:write(prefix:format(id) .. ' ')
   print(str)
-  return str 
+  return str
 end
 
 -- Get all files in directory
@@ -36,12 +35,12 @@ local rfscss = function(test_num, test, params, expected)
         ("%s ./%s %s"):format(EXECUTABLE_PATH, test, params),
         test_num
       )
-    ):read("*a")        
+    ):read("*a")
 
     print(
       ("%s\n%s"):format(('-'):rep(10), output)
     )
-  
+
     return check_output(output, expected)
 end
 
@@ -59,7 +58,7 @@ end
 local args = {
     {
       params = "--list rule-list.txt",
-      test = "test0", 
+      test = "test_file.scss",
       expected = {
         0, 0, "rule-list.txt"
       },
@@ -70,7 +69,7 @@ local args = {
     },
     {
       params = "--tidy",
-      test = "test0", 
+      test = "test_file.scss",
       expected = {
         10, 11, "tidy-not__valid__filename.scss"
       },
@@ -81,7 +80,7 @@ local args = {
     },
     {
       params = "--inline-rfscss \".?-selector->?.scss\"",
-      test = "test0", 
+      test = "test_file.scss",
       expected = {
         1, 11, "unlisted.scss"
       },
@@ -139,5 +138,5 @@ if failed then
   print("Not all of the expected output files were found.")
 else
   print("[run-tests.lua] All build tests passed successfully.")
-  os.execute("rm -rf *.scss *.txt") 
+  os.execute("rm -rf *.scss *.txt")
 end

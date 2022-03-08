@@ -4,13 +4,13 @@ This tool allows you to extract style rules and refactor large stylesheets.
 
 ## Index
 
-- <a href="#about">About</a>
-- <a href="#usage">Usage</a>
-- <a href="#build">Build</a>
-- <a href="#notes">Notes</a>
-- <a href="#rfscss_file">The .rfscss file</a>
-- <a href="#constraints">Constraints</a>
-- <a href="#contributing">Contributing</a>
+-   <a href="#about">About</a>
+-   <a href="#usage">Usage</a>
+-   <a href="#build">Build</a>
+-   <a href="#notes">Notes</a>
+-   <a href="#rfscss_file">The .rfscss file</a>
+-   <a href="#constraints">Constraints</a>
+-   <a href="#contributing">Contributing</a>
 
 <h3 id="about">About</h3>
 
@@ -20,18 +20,27 @@ The rfscss specification contains a set of rules that tell rfscss how to deal wi
 
 <h3 id="usage">Usage</h3>
 
+Example usage:
+
+```
+curl https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css | rfscss -p -i ".nav%->bootstrap-nav.css"
+```
+
 There is a detailed guide available at <a href="https://coals.live/blog/refactor-large-scss-into-multiple-files">this article</a>
 
 If you run rfscss without arguments, the following information will be shown:
 
 ```
-Usage: rfscss <file> [ -l <path> | -i <rfscss> | -e <path> | -w | -t ]
+Usage: rfscss <file | -p> [ -l <path> | -i <rfscss> | -e <path> | -w | -t ]
+  --from-pipe [-p]: read from stdin.
   --tidy [-t]: tidy the selector when using ? to extract into a file.
   --enable-warnings [-w]: enable warnings.
   --list [-l] <path>: list all of the selectors in a file.
   --inline-rfscss [-i] <rfscss>: use <rfscss> as the specification.
   --export-imports [-e] <path>: write @import rules for every extracted rule, and save it at <path>
 ```
+
+`--from-pipe [-p]`: read from stdin.
 
 `--tidy [-t]`: The selector will be split into multiple segments separated by underscore, special characters removed.
 
@@ -47,10 +56,30 @@ rfscss does not create directories recursively, so every path you specify should
 
 <h3 id="build">Build</h3>
 
-To build this utility, you will need CMake 3.12 or above, as well as `make`.
+To build and install this utility, you will need CMake 3.12 or above, as well as `make`.
 
-Run the following command to compile the project:
-`bash build.sh`
+```
+git clone https://github.com/coalio/rfscss
+cd rfscss
+cd build
+bash build.sh --build-install
+
+```
+
+`build.sh` also provides other utilities, for example:
+
+```
+# Assumes you already built the binary and you only want to install it
+bash build.sh -i
+
+# Only builds the binary
+bash build.sh
+
+# Runs tests
+bash build.sh --test
+```
+
+Of course, `build.sh` always assumes you're running it from the `/build` directory.
 
 <h3 id="notes">Notes</h3>
 
@@ -59,16 +88,16 @@ For cleanliness, intrusive comments in the selector are stripped out always.
 ```scss
 .selector/* comment */,
 .another-selector {
-  &-sub {
-    color: red;
-  }
+    &-sub {
+        color: red;
+    }
 }
 
 .selector,
 .another-selector {
-  &-sub {
-    color: red;
-  }
+    &-sub {
+        color: red;
+    }
 }
 ```
 
@@ -80,10 +109,10 @@ The _pattern_ is compared against the selectors. All characters must be exact, e
 
 The _wildcards_ are:
 
-- `%`: match zero, one or more characters.
-- `_`: match one character.
-- `?`: match and capture zero, one or more characters.
-- `\`: match the next character literally.
+-   `%`: match zero, one or more characters.
+-   `_`: match one character.
+-   `?`: match and capture zero, one or more characters.
+-   `\`: match the next character literally.
 
 They resemble the `LIKE` SQL operator, but also introduce a `?` wildcard, used for capturing a part of the selector.
 

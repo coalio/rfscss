@@ -48,7 +48,7 @@ bool Wildcard::match(
 
             break;
         }
-        
+
         state.curr_sign = check_char(pattern[state.curr_pos]);
         LOG("debug: " << pattern << "\n\7compare: " << compare << " pivot: " << state.pivot_curr_pos << " curr: " << state.curr_pos << " last: " << state.last_sign << " curr_sign: " << state.curr_sign);
         LOG("match: " << is_match);
@@ -68,7 +68,7 @@ bool Wildcard::match(
                 state.match_position_point = state.curr_pos;
             }
         }
-        
+
         if (state.curr_sign == 0 || state.take_next_literally) {
             state.take_next_literally = false;
             LOG("Entered sign 0");
@@ -113,19 +113,19 @@ bool Wildcard::match(
             state.on_pivot_wildcard = true;
             state.match_position_point = state.curr_pos;
         }
-        
+
         if (state.curr_sign == 2 && !state.take_next_literally) {
             LOG("Entered sign 2");
             if (!is_match && state.last_sign == 0) {
                 break;
             }
-            
+
             state.curr_pos++;
             if (!pattern[state.curr_pos] && is_match == true && !ignore_captures) {
                 // If there is nothing after ?,
                 // anything that comes will be valid anyways, so set
                 // is_match to true and capture everything next then break
-                state.captures.push_back(std::string());
+                state.captures.emplace_back("");
                 state.captures.back() += compare.substr(state.pivot_curr_pos);
                 break;
             }
@@ -139,7 +139,7 @@ bool Wildcard::match(
 
             if (!ignore_captures) {
                 state.is_capturing = true;
-                state.captures.push_back(std::string());
+                state.captures.emplace_back("");
             }
         }
 
