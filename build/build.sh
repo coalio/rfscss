@@ -23,7 +23,7 @@ then
     fi
 
     # make
-    echo "[build.sh] finished"
+    echo "[build.sh] finished bulding"
 fi
 
 # if $1 is --test then
@@ -32,6 +32,7 @@ then
     # Run tests
     # Check if luajit is a valid command
     if [ -x "$(command -v rfscss)" ]
+    then
         if [ -x "$(command -v luajit)" ]
         then
             cd ../dev/unit_testing && luajit run-tests.lua
@@ -39,12 +40,12 @@ then
         then
             cd ../dev/unit_testing && lua run-tests.lua
         else
-            echo "Unable to run tests: Lua is required."
-            echo "Tests are meant for development, so you don't need to install Lua in order to use rfscss."
+            echo "[build.sh] Unable to run tests: Lua is required."
+            echo "[build.sh] Tests are meant for development, so you don't need to install Lua in order to use rfscss."
         fi
     else
-        echo "Unable to run tests: can't find rfscss at PATH."
-        echo "Install rfscss first using 'sudo make install' or './build.sh --build-install'"
+        echo "[build.sh] Unable to run tests: can't find rfscss at PATH."
+        echo "[build.sh] Install rfscss first using 'sudo make install' or './build.sh --build-install'"
     fi
 elif [[ $1 = "--install" || $1 = "--build-install" || $1 = "-i" ]]
 then
@@ -52,9 +53,10 @@ then
     if [ -x "$(command -v make)" ]
     then
         sudo make install
+        echo "[build.sh] finished installing"
     else
         echo "[build.sh] Make is not found."
-        echo "Install make with 'sudo pacman -S make'"
+        echo "[build.sh] Install make with 'sudo pacman -S make'"
         exit 1
     fi
 elif [ $# -eq 1 ]
