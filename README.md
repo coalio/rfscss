@@ -64,7 +64,6 @@ cd rfscss
 cd build
 bash build.sh --build-install
 
-
 ```
 
 `build.sh` also provides other utilities, for example:
