@@ -6,7 +6,8 @@ aux_source_directory(. SRC_LIST)
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 add_subdirectory(src)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC src)
+set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "rfscss")
+target_link_libraries(${PROJECT_NAME} PUBLIC rfscss-src)
 target_include_directories(${PROJECT_NAME} PRIVATE src)
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
@@ -18,5 +19,3 @@ endif ()
 install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION ${BIN_INSTALL_DIR}
 )
-
-set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "rfscss")

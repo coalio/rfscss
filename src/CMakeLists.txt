@@ -1,4 +1,4 @@
-add_library(src 
+add_library(rfscss-src 
     file.cpp
     parser.cpp
     error.cpp

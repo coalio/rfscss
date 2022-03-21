@@ -201,7 +201,7 @@ bool Parser::check_parsing_errors() {
             error_msg, ERR_UNBALANCED_BRACES, state->selectors.back().c_str()
         );
 
-        Error * error = new Error();
+        Error* error = new Error();
 
         error->at_char = state->selector_pos.back();
         error->column = 1;
@@ -222,7 +222,7 @@ bool Parser::check_parsing_errors() {
             error_msg, ERR_UNFINISHED_BLOCK_COMMENT, state->selectors.back().c_str()
         );
 
-        Error * error = new Error();
+        Error* error = new Error();
 
         error->at_char = state->selector_pos.back();
         error->column = 1;

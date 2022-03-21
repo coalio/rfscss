@@ -21,7 +21,7 @@ struct State {
     bool getting_selector = false;
 
     // Last error
-    Error * error;
+    Error* error;
     // Vector of strings
     std::vector<std::string> selectors;
     // Vector of ints containing the selectors ids
