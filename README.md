@@ -40,7 +40,7 @@ Usage: rfscss <file | -p> [ -l <path> | -i <rfscss> | -e <path> | -w | -t ]
   --export-imports [-e] <path>: write @import rules for every extracted rule, and save it at <path>
 ```
 
-`--from-pipe [-p]`: read from stdin.
+`--from-pipe [-p]`: Reads the input scss/css stdin.
 
 `--tidy [-t]`: The selector will be split into multiple segments separated by underscore, special characters removed.
 
