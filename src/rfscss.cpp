@@ -21,17 +21,46 @@ Specification rfscss_spec::parse_spec(std::shared_ptr<State> state, std::vector<
         state->curr_char = c;
 
         if (!state->capturing_block) {
-            if (state->expecting_rule_or_selector && !Utils::is_whitespace(state->curr_char)) {
-                state->getting_selector = true;
-                state->expecting_rule_or_selector = false;
-                spec.match_strings.emplace_back("");
+            if (state->expecting_rule_or_selector) {
+                if (!Utils::is_whitespace(state->curr_char)) {
+                    // We're gonna capture the first half of the rule
+                    // (selector)->path
+                    state->getting_selector = true;
+                    state->expecting_rule_or_selector = false;
+                    spec.match_strings.emplace_back("");
+                } else {
+                    // There's nothing to do for now, until we find a non-whitespace char
+                    continue;
+                }
             }
 
             if (state->getting_selector) {
+                // Push to the current selector string
                 spec.match_strings.back() += state->curr_char;
             }
 
             if (state->last_char == '-' && state->curr_char == '>') {
+                if (spec.match_strings.back().size() == 2) {
+                    // '->' isn't valid if there's no selector to match against
+                    // size() == 2 means that it only has captured the '-' and '>'
+                    char error_msg[100]; sprintf(
+                        error_msg, 
+                        ERR_SPECIFICATION_MISSING_SELECTOR, 
+                        state->curr_line
+                    );
+
+                    Error* error = new Error();
+
+                    error->kind = "Invalid specification";
+                    error->message = error_msg;
+                    error->line = state->curr_line;
+                    error->column = state->curr_col;
+                    error->at_char = state->curr_pos;
+                    state->error = error;
+
+                    return spec;
+                }
+
                 state->getting_selector = false;
                 state->capturing_block = true;
                 spec.match_strings.back() = 
@@ -49,7 +78,7 @@ Specification rfscss_spec::parse_spec(std::shared_ptr<State> state, std::vector<
                     spec.match_strings.back().c_str()
                 );
 
-                Error * error = new Error();
+                Error* error = new Error();
 
                 error->kind = "Invalid specification";
                 error->message = error_msg;
@@ -58,6 +87,7 @@ Specification rfscss_spec::parse_spec(std::shared_ptr<State> state, std::vector<
                 error->at_char = state->curr_pos;
 
                 state->error = error;
+                
                 return spec;
             }
         } else {
@@ -77,7 +107,7 @@ Specification rfscss_spec::parse_spec(std::shared_ptr<State> state, std::vector<
                     spec.match_strings.back().c_str()
                 );
 
-                Error * error = new Error();
+                Error* error = new Error();
 
                 error->kind = "Invalid specification";
                 error->message = error_msg;

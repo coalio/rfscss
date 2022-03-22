@@ -5,14 +5,15 @@
 #include <variant>
 #include <vector>
 #include <sys/stat.h>
-#include "src/file.h"
-#include "src/state.h"
-#include "src/parser.h"
-#include "src/utils.h"
-#include "src/debug.h"
-#include "src/rfscss.h"
-#include "src/specification.h"
-#include "src/wildcard.h"
+
+#include "file.h"
+#include "state.h"
+#include "parser.h"
+#include "utils.h"
+#include "debug.h"
+#include "rfscss.h"
+#include "specification.h"
+#include "wildcard.h"
 
 int main(int argc, char* argv[])
 {
@@ -142,6 +143,7 @@ int main(int argc, char* argv[])
     } else {
         std::cout << "rfscss - parsing specification provided" << std::endl;
         std::shared_ptr<State> spec_state(new State());
+        LOG("About to parse spec");
         spec = rfscss_spec::parse_spec(spec_state, spec_input);
         if (spec_state->error->kind != "") {
             spec_state->error->print(spec_path);

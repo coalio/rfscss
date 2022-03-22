@@ -5,11 +5,13 @@ CMakeFiles
 Makefile
 libsrc.a
 .vscode
+build/*
 tests/*
 !tests/build.*
 !tests/.rfscss
 rfscss
 /*.css
+install_manifest.txt
 
 # Debugs
 specific_testing
