@@ -143,7 +143,6 @@ int main(int argc, char* argv[])
     } else {
         std::cout << "rfscss - parsing specification provided" << std::endl;
         std::shared_ptr<State> spec_state(new State());
-        LOG("About to parse spec");
         spec = rfscss_spec::parse_spec(spec_state, spec_input);
         if (spec_state->error->kind != "") {
             spec_state->error->print(spec_path);
