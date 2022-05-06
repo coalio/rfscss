@@ -103,7 +103,7 @@ For cleanliness, intrusive comments in the selector are stripped out always.
 
 <h3 id="rfscss_file">The rfscss syntax</h3>
 
-A _rfscss_ specification should contain a sequence of rules. These rules must consist of a _pattern_ and an output file path, separated by a right arrow. A _.rfscss_ file containing the specification is expected to be found at the same directory of the main _.scss_ file. Alternatively, a _rfscss_ specification can be provided using the `--inline-rfscss` option.
+A _rfscss_ specification should contain a list of rules. These rules must consist of a _pattern_ and an output file path, separated by a right arrow. A _.rfscss_ file containing the _rfscss_ specification is expected to be found at the same directory of the main _.scss_ file. Alternatively, a _rfscss_ specification can be provided using the `--inline-rfscss` option.
 
 The _pattern_ is compared against the selectors. All characters must be exact, except when you use _wildcards_.
 
