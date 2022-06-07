@@ -46,7 +46,7 @@ Usage: rfscss <file | -p> [ -l <path> | -i <rfscss> | -e <path> | -w | -t ]
 
 `--enable-warnings [-w]`: rfscss will let you know if there is something that could go wrong.
 
-`--list [-l]`: Parses all of the selectors and rules in the file. For clearness, `selector` refers to `(.+?)\s*[\{;]` at the root level.
+`--list [-l]`: Lists all of the selectors and rules in the file. For clearness, `selector` refers to `(.+?)\s*[\{;]` at the root level.
 
 `--inline-rfscss [-i]`: Use the rfscss provided in the command. Takes precedence over the .rfscss file.
 
