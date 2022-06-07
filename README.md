@@ -1,6 +1,6 @@
 # rfscss
 
-This tool allows you to extract style rules and refactor large stylesheets.
+This tool allows you to extract style rules and split large stylesheets.
 
 ## Index
 
