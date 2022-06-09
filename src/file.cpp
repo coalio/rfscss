@@ -8,6 +8,9 @@
 #include "file.h"
 #include "debug.h"
 
+// Rename std::filesystem to fs
+namespace fs = std::filesystem;
+
 bool File::is_valid_path(const std::string& path) {
     // Check if the path is valid, i.e. it is not empty and does not contain
     // any invalid characters.
@@ -58,9 +61,9 @@ void File::place_in(std::string file_path, std::string content) {
     }
 
     // Create the folder if it does not exist
-    if (!std::filesystem::exists(folder) && (folder != file_path)) {
+    if (!fs::exists(folder) && (folder != file_path)) {
         // Create directories
-        if (!std::filesystem::create_directories(folder)) {
+        if (!fs::create_directories(folder)) {
             std::cerr << "rfscss - failed to create directory '"
                       << folder << "'"
                       << std::endl;
