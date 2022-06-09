@@ -1,6 +1,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <filesystem>
 #include <cstring>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -19,7 +20,7 @@ bool File::is_valid_path(const std::string& path) {
     } else {
         for (char c : path) {
             if (
-                c < 32 || c == ':' || c == '*'|| 
+                c < 32 || c == ':' || c == '*'||
                 c == '"' || c == '<' || c == '>' ||
                 c == '|' || c == '?'
             ) {
@@ -32,7 +33,7 @@ bool File::is_valid_path(const std::string& path) {
 
 }
 
-std::vector<char> File::read(std::string file_path) {
+std::string File::read(std::string file_path) {
     std::ifstream file(file_path);
     if (!file.is_open()) {
         std::cerr << "rfscss - file '" << file_path << "' not found" << std::endl;
@@ -41,7 +42,7 @@ std::vector<char> File::read(std::string file_path) {
     std::ostringstream ss;
     ss << file.rdbuf();
     const std::string& s = ss.str();
-    std::vector<char> content(s.begin(), s.end());
+    std::string content(s.begin(), s.end());
 
     return content;
 }
@@ -49,15 +50,21 @@ std::vector<char> File::read(std::string file_path) {
 void File::place_in(std::string file_path, std::string content) {
     // If the folder does not exist, create it
     struct stat info;
-    
+
     std::string folder = file_path;
     std::string::size_type delim_pos = folder.find_last_of("/");
     if (delim_pos != std::string::npos) {
         folder = folder.substr(0, delim_pos);
     }
 
-    if (folder != file_path) {
-        mkdir(folder.c_str(), 0777);
+    // Create the folder if it does not exist
+    if (!std::filesystem::exists(folder) && (folder != file_path)) {
+        // Create directories
+        if (!std::filesystem::create_directories(folder)) {
+            std::cerr << "rfscss - failed to create directory '"
+                      << folder << "'"
+                      << std::endl;
+        }
     }
 
     std::ofstream file;
@@ -67,7 +74,7 @@ void File::place_in(std::string file_path, std::string content) {
         throw std::ios_base::failure(std::strerror(errno));
         #endif
 
-        std::cerr << "rfscss - fatal: failed to open '" << file_path 
+        std::cerr << "rfscss - fatal: failed to open '" << file_path
                   << "' (" << std::strerror(errno) << ")" << std::endl;
         return;
     }

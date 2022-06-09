@@ -5,12 +5,11 @@
 class Parser {
 private:
     // The state of the parser
-    // This is a private class member
-    std::shared_ptr<State> state;
+    std::unique_ptr<State>& state;
 public:
     // Creates a new Parser instance fed by a State instance
-    Parser(std::shared_ptr<State> state) : state(state) {
-        LOG("Creating new parser using state: " << state->curr_pos);
+    Parser(std::unique_ptr<State>& _state) : state(_state) {
+        LOG("Creating new parser using state: " << _state->curr_pos);
     }
 
     int8_t check_char(char c);
@@ -18,7 +17,7 @@ public:
     // Moves to the next char. This also increments the current
     // char cursor. Does not deal with lines/columns counters
     void next(char c);
-    // Updates the line && column
+    // Updates the line and column
     void increment_cursor();
     // Manages the state when inside a comment
     // Principally, waits for the comment closing marker
@@ -36,16 +35,16 @@ public:
     // When capturing the selector, pushes the character to the last selector
     // in the state->selectors vector
     void push_to_selector();
-    // Updates && returns the current capture level. Levels are updated
-    // based in the braces
+    // Updates and returns the current capture level. Levels are updated
+    // based in the brace count
     int check_capture_level();
-    // When parsing finishes, this function checks for possible semantical errors
-    // If any found, creates a new Error && saves it to state->error for it to be
-    // read at main.cpp
+    // When parsing finishes, this function checks for possible errors
+    // If any were found, creates a new Error and saves it to state->error
+    // for it to be read at main.cpp
     bool check_parsing_errors();
 
     void parse_input(
         std::string workspace,
-        std::vector<char> input
+        std::string input
     );
 };

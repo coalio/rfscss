@@ -1,7 +1,7 @@
-add_library(rfscss-src 
+add_library(rfscss-src
     file.cpp
     parser.cpp
-    error.cpp
+    parser_exception.cpp
     utils.cpp
     rfscss.cpp
     wildcard.cpp

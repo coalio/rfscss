@@ -13,6 +13,7 @@
 #include "debug.h"
 #include "rfscss.h"
 #include "specification.h"
+#include "parser_exception.h"
 #include "wildcard.h"
 
 int main(int argc, char* argv[])
@@ -20,16 +21,16 @@ int main(int argc, char* argv[])
     umask(0);
 
     if (argc < 2) {
-        std::cerr << "Usage: rfscss <file | -p> [ -l <path> | -i <rfscss> | -e <path> | -w | -t ]\n";
-        std::cerr << "  --from-pipe [-p]: read from stdin.\n";
-        std::cerr << "  --tidy [-t]: tidy the selector when using ? to extract into a file.\n";
-        std::cerr << "  --enable-warnings [-w]: enable warnings.\n";
-        std::cerr << "  --list [-l] <path>: list all of the selectors in a file.\n";
-        std::cerr << "  --inline-rfscss [-i] <rfscss>: use <rfscss> as the specification.\n";
-        std::cerr << "  --export-imports [-e] <path>: write @import rules for every extracted rule, and save it at <path>\n";
-        std::cerr << "\n";
+        std::cout << "Usage: rfscss <file | -p> [ -l <path> | -i <rfscss> | -e <path> | -w | -t ]\n";
+        std::cout << "  --from-pipe [-p]: read from stdin.\n";
+        std::cout << "  --tidy [-t]: tidy the selector when using ? to extract into a file.\n";
+        std::cout << "  --enable-warnings [-w]: enable warnings.\n";
+        std::cout << "  --list [-l] <path>: list all of the selectors in a file.\n";
+        std::cout << "  --inline-rfscss [-i] <rfscss>: use <rfscss> as the specification.\n";
+        std::cout << "  --export-imports [-e] <path>: write @import rules for every extracted rule, and save it at <path>"
+                  << std::endl;
 
-        return 1;
+        return 0;
     }
 
 
@@ -74,14 +75,18 @@ int main(int argc, char* argv[])
     std::string file_name;
     std::string workspace;
 
-    // Declare the input vector
-    std::vector<char> input;
+    // Declare the input string
+    std::string input;
     if (options.count("from-pipe")) {
         // Read all from stdin
         workspace = '.';
         file_name = "stdin";
         file_path = "pipe";
-        input = std::vector<char>(std::istreambuf_iterator<char>(std::cin), {});
+
+        // Read the input from stdin using an iterator
+        input = std::string(
+            std::istreambuf_iterator<char>(std::cin), {}
+        );
     } else {
         workspace = file_path;
         // Read from file
@@ -114,17 +119,23 @@ int main(int argc, char* argv[])
     bool is_spec_available = true;
     bool build_spec = false;
     std::string spec_path = workspace + "/.rfscss";
-    std::vector<char> spec_input;
+    std::string spec_input;
 
     // Check if options["inline-rfscss"] is not set
-    if (options.count("inline-rfscss") && options["inline-rfscss"].empty() || !options.count("inline-rfscss")) {
+    if (
+           options.count("inline-rfscss")
+        && options["inline-rfscss"].empty()
+        || !options.count("inline-rfscss")
+    ) {
         // If no inline specification is provided, try to read the .rfscss
         // file from the workspace
         spec_input = File::read(spec_path);
     } else if (options.count("inline-rfscss") && options["inline-rfscss"] != "") {
         // If an inline specification is provided, use it
-        spec_input = std::vector<char>(options["inline-rfscss"].begin(),
-                                       options["inline-rfscss"].end());
+        spec_input = std::string(
+            options["inline-rfscss"].begin(),
+            options["inline-rfscss"].end()
+        );
     }
 
     if (options.count("list")) {
@@ -132,8 +143,9 @@ int main(int argc, char* argv[])
         std::cout << "rfscss - creating a list of selectors based in the input...\n";
     } else if (spec_input.empty()) {
         std::cout << "rfscss - no specification provided.\n"
-                        "run rfscss with flag --list [-l] to list all "
-                        "of the rules in the file" << std::endl;
+                     "run rfscss with flag --list [-l] to list all "
+                     "of the rules in the input"
+                  << std::endl;
 
         return 1;
     }
@@ -142,21 +154,27 @@ int main(int argc, char* argv[])
         is_spec_available = false;
     } else {
         std::cout << "rfscss - parsing specification provided" << std::endl;
-        std::shared_ptr<State> spec_state(new State());
-        spec = rfscss_spec::parse_spec(spec_state, spec_input);
-        if (spec_state->error->kind != "") {
-            spec_state->error->print(spec_path);
+
+        // Create a new state for the specification parser
+        auto spec_state = std::make_unique<State>();
+
+        // Parse the specification
+        try {
+            spec = rfscss_spec::parse_spec(spec_state, spec_input);
+        } catch (parser_exception& e) {
+            e.print(file_path);
             return 1;
         }
     }
 
-    std::shared_ptr<State> state(new State());
-    std::unique_ptr<Parser> parser(new Parser(state));
+    auto state = std::make_unique<State>();
+    Parser parser(state);
 
     // Parse the file
-    parser->parse_input(workspace, input);
-    if (state->error->kind != "") {
-        state->error->print(file_path);
+    try {
+        parser.parse_input(workspace, input);
+    } catch (parser_exception& e) {
+        e.print(file_path);
         return 1;
     }
 

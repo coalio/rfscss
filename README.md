@@ -52,8 +52,6 @@ Usage: rfscss <file | -p> [ -l <path> | -i <rfscss> | -e <path> | -w | -t ]
 
 `--export-imports [-e]`: Writes an @import rule for every single output file and saves it at the path specified.
 
-rfscss does not create directories recursively, so every path you specify should already exist. However, rfscss will create the folder at the base directory if it does not exist. This assures a single level directory creation.
-
 <h3 id="build">Build</h3>
 
 To build and install this utility, you will need CMake 3.12 or above, as well as `make`.
@@ -104,6 +102,8 @@ For cleanliness, intrusive comments in the selector are stripped out always.
 <h3 id="rfscss_file">The rfscss syntax</h3>
 
 A _rfscss_ specification should contain a list of rules. These rules must consist of a _pattern_ and an output file path, separated by a right arrow. A _.rfscss_ file containing the _rfscss_ specification is expected to be found at the same directory of the main _.scss_ file. Alternatively, a _rfscss_ specification can be provided using the `--inline-rfscss` option.
+
+**rfscss** creates directories recursively, so the path will be created if it does not exist.
 
 The _pattern_ is compared against the selectors. All characters must be exact, except when you use _wildcards_.
 
