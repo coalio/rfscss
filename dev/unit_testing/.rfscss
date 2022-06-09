@@ -1,9 +1,0 @@
-@import%->imports.scss
-$%->variables.scss
-@%->at-rules.scss
-.literal->literal.scss
-\.\s\e\l\e\c\t\o\r->literal.scss
-.selector-#{$?}->?.scss
-.tidy-this ?->tidy-?.scss
-.this-too->comment.scss
-.? %->?.scss

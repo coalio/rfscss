@@ -56,6 +56,7 @@ void File::place_in(std::string file_path, std::string content) {
 
     std::string folder = file_path;
     std::string::size_type delim_pos = folder.find_last_of("/");
+
     if (delim_pos != std::string::npos) {
         folder = folder.substr(0, delim_pos);
     }
@@ -72,6 +73,7 @@ void File::place_in(std::string file_path, std::string content) {
 
     std::ofstream file;
     file.open(file_path, std::ios::out | std::ios::app);
+
     if (file.fail()) {
         #if DEBUG
         throw std::ios_base::failure(std::strerror(errno));
@@ -83,5 +85,5 @@ void File::place_in(std::string file_path, std::string content) {
     }
 
     file.exceptions(file.exceptions() | std::ios::failbit | std::ifstream::badbit);
-    file << std::endl << content;
+    file << content;
 }

@@ -18,8 +18,6 @@
 
 int main(int argc, char* argv[])
 {
-    umask(0);
-
     if (argc < 2) {
         std::cout << "Usage: rfscss <file | -p> [ -l <path> | -i <rfscss> | -e <path> | -w | -t ]\n";
         std::cout << "  --from-pipe [-p]: read from stdin.\n";
@@ -91,6 +89,7 @@ int main(int argc, char* argv[])
         workspace = file_path;
         // Read from file
         std::string::size_type delim_pos = workspace.find_last_of("/");
+
         if (delim_pos != std::string::npos) {
             workspace = workspace.substr(0, delim_pos);
         }
@@ -114,10 +113,13 @@ int main(int argc, char* argv[])
     if (input.empty()) {
         return 1;
     }
+
     // Open the .rfscss specification. Should be available at "workspace"
-    struct Specification spec;
+    Specification spec;
+
     bool is_spec_available = true;
-    bool build_spec = false;
+    bool list_selectors = false;
+
     std::string spec_path = workspace + "/.rfscss";
     std::string spec_input;
 
@@ -139,7 +141,7 @@ int main(int argc, char* argv[])
     }
 
     if (options.count("list")) {
-        build_spec = true;
+        list_selectors = true;
         std::cout << "rfscss - creating a list of selectors based in the input...\n";
     } else if (spec_input.empty()) {
         std::cout << "rfscss - no specification provided.\n"
@@ -178,48 +180,74 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    if (is_spec_available && !build_spec) {
+    if (is_spec_available && !list_selectors) {
         // Write the refactored output
         // Create a .scss file for every style rule
-        bool is_match = false;
-        bool selectors_without_match = false;
         int captured_selectors_amount = 0;
+        bool selectors_without_match = false;
+        bool is_match = false;
+
         std::vector<std::string> captures;
         std::vector<std::string> import_paths;
-        for (int style_rule_index = 0; style_rule_index < state->selectors.size(); style_rule_index++) {
-            std::string style_rule_name = Utils::trim(state->selectors[style_rule_index]);
-            std::string content = state->selectors[style_rule_index];
 
-            if (state->content[style_rule_index] != "") {
-                content += + "{" + state->content[style_rule_index] + "}\n";
-            }
+        for (
+            int rule_index = 0;
+            rule_index < state->selectors.size();
+            rule_index++
+        ) {
+            // Trim the rule name
+            auto rule_name =
+                Utils::trim(state->selectors[rule_index]);
 
-            // try for every spec to find the matching dir
-            for (int match_index = 0; match_index < spec.match_strings.size(); match_index++) {
-                is_match = Wildcard::match(spec.match_strings[match_index], style_rule_name, captures);
+            for (
+                int match_index = 0;
+                match_index < spec.match_strings.size();
+                match_index++
+            ) {
+                // Attempt to match this rule with the current pattern
+                auto& match_string = spec.match_strings[match_index];
+                is_match = Wildcard::match(
+                    match_string,
+                    rule_name,
+                    captures
+                );
+
+                // If it's a match then we can proceed
                 if (is_match) {
+                    // Increase the amount of captured selectors
                     captured_selectors_amount++;
-                    std::string file_path = spec.output_paths[match_index];
-                    // Replace ? for its respective capture index
+
+                    // Get the output path for this pattern
+                    auto& file_path = spec.output_paths[match_index];
+
+                    // Replace ? for the captured string at `i` position
                     if (!captures.empty()) {
-                        for (std::string::size_type i = 0; i < file_path.size(); ++i) {
-                            if (file_path[i] == '?')
-                            {
+                        for (size_t i = 0; i < file_path.size(); ++i) {
+                            if (file_path[i] == '?') {
                                 if (options.count("tidy")) {
-                                    file_path.replace(i, 1, Utils::tidy(captures[0]));
+                                    // Tidy the output path to make sure
+                                    // it's a valid path
+                                    Utils::tidy(captures[0]);
+
+                                    file_path.replace(i, 1, captures[0]);
                                 } else {
                                     file_path.replace(i, 1, captures[0]);
                                 }
 
                                 if (options.count("warnings")) {
-                                    // Copy file path into a new string and tidy it
                                     // If its not a valid path, warn the user
                                     if (!File::is_valid_path(file_path)) {
-                                        std::cerr << "rfscss - warning: '" << file_path << "' path could possibly be invalid" << std::endl;
+                                        std::cerr << "rfscss - warning: '"
+                                                  << file_path << "' path could possibly be invalid"
+                                                  << std::endl;
                                     }
                                 }
 
+                                // Advance the cursor so we continue looking for the next
+                                // ? in the output path
                                 i += captures[0].size() - 1;
+
+                                // Erase the replaced string from the list of captures
                                 captures.erase(captures.begin());
                             }
                         }
@@ -227,28 +255,52 @@ int main(int argc, char* argv[])
 
                     if (options["export-imports"] != "") {
                         // Add the import path to the list of import paths
-                        if (std::find(import_paths.begin(), import_paths.end(), file_path) == import_paths.end()) {
-                            std::cout << ". added import path " << file_path << std::endl;
+                        if (
+                            std::find(
+                                import_paths.begin(),
+                                import_paths.end(), file_path
+                            ) == import_paths.end()
+                        ) {
+                            std::cout << ". added import path " << file_path << '\n';
                             import_paths.push_back(file_path);
                         }
                     }
 
+                    // Get the content for this rule
+                    auto& content = state->selectors[rule_index];
+
+                    // If the content is not empty, that means this rule
+                    // is a style rule
+                    if (state->content[rule_index] != "") {
+                        // Append the content and two newlines to separate between rules
+                        content += + "{" + state->content[rule_index] + "}\n\n";
+                    }
+
+                    // Append the content to the corresponding file
                     File::place_in(workspace + "/" + file_path, content);
+
                     break;
                 }
             }
 
+            // If the rule is not a match, we'll warn the user
+            // that there are selectors without matches
             if (!is_match) {
                 selectors_without_match = true;
             }
         }
 
         if (selectors_without_match && options.count("warnings")) {
-            std::cerr << "rfscss - warning: there are rules without match in specification, these will be missing.\ndeclare a '%' or '?' rule if you wish to capture all" << std::endl;
+            std::cerr << "rfscss - warning: found rules without match.\n"
+                      << "declare a '%' or '?' rule if you wish to capture all rules"
+                      << std::endl;
         }
 
         if (options["export-imports"] != "") {
+            // Export a list of @import rules to the path specified
+            // by the user
             std::cout << ". exporting @imports at " << options["export-imports"] << std::endl;
+
             std::stringstream ss;
             for (std::string import_path : import_paths) {
                 ss << "@import \"" << import_path << "\";" << std::endl;
@@ -257,25 +309,28 @@ int main(int argc, char* argv[])
             File::place_in(options["export-imports"], ss.str());
         }
 
-        std::cout << "rfscss - captured " << captured_selectors_amount << " of " << state->selectors.size() << " selectors" << std::endl;
+        std::cout << "rfscss - "
+                  << "captured " << captured_selectors_amount
+                  << " out of " << state->selectors.size() << " selectors"
+                  << std::endl;
     }
 
-    if (build_spec) {
-        // Write the specification
-        std::variant<std::stringstream, std::string> specification_content;
+    if (list_selectors) {
+        // List all of the selectors in the input
+        std::stringstream ss;
 
         for (int i = 0; i < state->selectors.size(); i++) {
-            std::string style_rule_name = state->selectors[i];
+            auto& rule_name = state->selectors[i];
 
             // Trim the selector name
-            style_rule_name = Utils::trim(style_rule_name);
-            style_rule_name = Utils::replace(style_rule_name, "\n", " ");
+            rule_name = Utils::trim(rule_name);
+            Utils::replace(rule_name, "\n", " ");
 
-            std::get<std::stringstream>(specification_content) << style_rule_name << "\n";
+            ss << rule_name << "\n";
         }
 
-        specification_content = std::get<std::stringstream>(specification_content).str();
-        File::place_in(workspace + "/" + options["list"], std::get<std::string>(specification_content));
+        File::place_in(workspace + "/" + options["list"], ss.str());
+
         std::cout << "rfscss - list saved at " << workspace << "/" << options["list"] << std::endl;
     }
 
