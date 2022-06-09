@@ -2,13 +2,16 @@
 #include <vector>
 #include <memory>
 #include "error_definitions.h"
-#include "error.h"
+#include "parser_exception.h"
 #include "rfscss.h"
 #include "specification.h"
 #include "state.h"
-#include "utils.h" 
+#include "utils.h"
 
-Specification rfscss_spec::parse_spec(std::shared_ptr<State> state, std::vector<char> input) {
+Specification rfscss_spec::parse_spec(
+    std::unique_ptr<State>& state,
+    std::string input
+) {
     struct Specification spec;
 
     for (auto c : input) {
@@ -43,27 +46,25 @@ Specification rfscss_spec::parse_spec(std::shared_ptr<State> state, std::vector<
                 if (spec.match_strings.back().size() == 2) {
                     // '->' isn't valid if there's no selector to match against
                     // size() == 2 means that it only has captured the '-' and '>'
-                    char error_msg[100]; sprintf(
-                        error_msg, 
-                        ERR_SPECIFICATION_MISSING_SELECTOR, 
+                    char error_msg[100];
+                    sprintf(
+                        error_msg,
+                        ERR_SPECIFICATION_MISSING_SELECTOR,
                         state->curr_line
                     );
 
-                    Error* error = new Error();
-
-                    error->kind = "Invalid specification";
-                    error->message = error_msg;
-                    error->line = state->curr_line;
-                    error->column = state->curr_col;
-                    error->at_char = state->curr_pos;
-                    state->error = error;
-
-                    return spec;
+                    throw parser_exception(
+                        state->curr_line,
+                        state->curr_col,
+                        state->curr_pos,
+                        error_msg,
+                        "Invalid specification"
+                    );
                 }
 
                 state->getting_selector = false;
                 state->capturing_block = true;
-                spec.match_strings.back() = 
+                spec.match_strings.back() =
                     spec.match_strings.back()
                         .substr(0, spec.match_strings.back().size() - 2);
 
@@ -71,24 +72,21 @@ Specification rfscss_spec::parse_spec(std::shared_ptr<State> state, std::vector<
             }
 
             if (state->curr_char == '\n') {
-                char error_msg[100]; sprintf(
-                    error_msg, 
-                    ERR_SPECIFICATION_MISSING_PATH, 
-                    state->curr_line, 
+                char error_msg[100];
+                sprintf(
+                    error_msg,
+                    ERR_SPECIFICATION_MISSING_PATH,
+                    state->curr_line,
                     spec.match_strings.back().c_str()
                 );
 
-                Error* error = new Error();
-
-                error->kind = "Invalid specification";
-                error->message = error_msg;
-                error->line = state->curr_line;
-                error->column = state->curr_col;
-                error->at_char = state->curr_pos;
-
-                state->error = error;
-                
-                return spec;
+                throw parser_exception(
+                    state->curr_line,
+                    state->curr_col,
+                    state->curr_pos,
+                    error_msg,
+                    "Invalid specification"
+                );
             }
         } else {
             if (state->curr_char == '\n') {
@@ -100,25 +98,23 @@ Specification rfscss_spec::parse_spec(std::shared_ptr<State> state, std::vector<
             }
 
             if (state->last_char == '-' && state->curr_char == '>') {
-                char error_msg[100]; sprintf(
-                    error_msg, 
-                    ERR_SPECIFICATION_MISSING_PATH, 
-                    state->curr_line, 
+                char error_msg[100];
+                sprintf(
+                    error_msg,
+                    ERR_SPECIFICATION_MISSING_PATH,
+                    state->curr_line,
                     spec.match_strings.back().c_str()
                 );
 
-                Error* error = new Error();
-
-                error->kind = "Invalid specification";
-                error->message = error_msg;
-                error->line = state->curr_line;
-                error->column = state->curr_col;
-                error->at_char = state->curr_pos;
-
-                state->error = error;
-                return spec;
+                throw parser_exception(
+                    state->curr_line,
+                    state->curr_col,
+                    state->curr_pos,
+                    error_msg,
+                    "Invalid specification"
+                );
             }
-            
+
             spec.output_paths.back() += state->curr_char;
         }
     }

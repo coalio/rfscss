@@ -3,7 +3,7 @@
 #include <memory>
 #include <sstream>
 #include "error_definitions.h"
-#include "error.h"
+#include "parser_exception.h"
 #include "file.h"
 #include "utils.h"
 #include "parser.h"
@@ -197,22 +197,18 @@ bool Parser::check_parsing_errors() {
     // If state->levels is not 0, the program did not parse correctly
     // (i.e. there is a closing brace without an opening brace or vice versa)
     if (state->levels != 0) {
-        char error_msg[100]; sprintf(
+        char error_msg[100];
+        sprintf(
             error_msg, ERR_UNBALANCED_BRACES, state->selectors.back().c_str()
         );
 
-        Error* error = new Error();
-
-        error->at_char = state->selector_pos.back();
-        error->column = 1;
-        error->message = error_msg;
-        error->kind = "Unbalanced braces";
-        error->line = state->selector_line.back();
-
-        // Set the state to error
-        state->error = error;
-
-        return true;
+        throw parser_exception(
+            state->curr_line,
+            state->curr_col,
+            state->curr_pos,
+            error_msg,
+            "Unbalanced braces"
+        );
     }
 
     // If we are in a multiline comment when we're finished reading the file,
@@ -222,18 +218,13 @@ bool Parser::check_parsing_errors() {
             error_msg, ERR_UNFINISHED_BLOCK_COMMENT, state->selectors.back().c_str()
         );
 
-        Error* error = new Error();
-
-        error->at_char = state->selector_pos.back();
-        error->column = 1;
-        error->message = error_msg;
-        error->kind = "Unterminated comment";
-        error->line = state->selector_line.back();
-
-        // Set the state to error
-        state->error = error;
-
-        return true;
+        throw parser_exception(
+            state->curr_line,
+            state->curr_col,
+            state->curr_pos,
+            error_msg,
+            "Unterminated comment"
+        );
     }
 
     return false;
@@ -241,7 +232,7 @@ bool Parser::check_parsing_errors() {
 
 void Parser::parse_input(
     std::string workspace,
-    std::vector<char> input
+    std::string input
 ) {
     for (auto c : input) {
         this->next(c);
