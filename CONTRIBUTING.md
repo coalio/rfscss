@@ -12,8 +12,6 @@ Sharing the project is also a way of contributing! If you think someone would be
 
 ## Guidelines
 
-Anything is fine as long as the code is clean and well documented. Don't hesitate of leaving comments if you think something looks tricky.
-
-Make sure all the build tests are fulfilled before you push your code. You can do this by running `bash build.sh --build-test` or `bash build.sh --test` if you already have built it.
+Anything is fine as long as the code is clean, C++'ish and well documented. Don't hesitate of leaving comments if you think something looks tricky. 
 
 Your pull request will be discussed upon and if everything it's fine, it will be merged into the develop branch, as the master branch is reserved for releases.
