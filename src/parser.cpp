@@ -8,38 +8,26 @@
 #include "utils.h"
 #include "parser.h"
 
-int8_t Parser::check_char(char c) {
-    // Return 0 if the character is a dot
-    // Return 1 if the character is an opening brace
-    // Return 2 if the character is a closing brace
-    // Return 3 if the character is a whitespace
-    // Return 4 if the character is a forward slash
-    // Return 5 if the character is an asterisk
-    // Return 6 if the character is a newline
-    // Return 7 if the character is a semicolon
-    // Return 8 if the character is a number sign
-
+Token Parser::check_char(char c) {
     if (c == '.') {
-        return 0;
+        return Token::DOT;
     } else if (c == '{') {
-        return 1;
+        return Token::OPEN_BRACE;
     } else if (c == '}') {
-        return 2;
+        return Token::CLOSE_BRACE;
     } else if (c == ' ') {
-        return 3;
+        return Token::WHITESPACE;
     } else if (c == '/') {
-        return 4;
+        return Token::FORWARD_SLASH;
     } else if (c == '*') {
-        return 5;
+        return Token::ASTERISK;
     } else if (c == '\n') {
-        return 6;
+        return Token::NEWLINE;
     } else if (c == ';') {
-        return 7;
-    }  else if (c == '#') {
-        return 8;
+        return Token::SEMICOLON;
     }
 
-    return -1;
+    return Token::UNKNOWN;
 }
 
 void Parser::next(char c) {
@@ -59,7 +47,7 @@ void Parser::next(char c) {
 
 void Parser::increment_cursor() {
     // If current character is a newline, increment the line number
-    if (state->curr_sign == 6) {
+    if (state->curr_sign == Token::NEWLINE) {
         state->curr_line++;
         state->curr_col = 1;
     } else {
@@ -73,7 +61,7 @@ void Parser::in_comment() {
         // If the character is an forward slash, we are in hold comment mode
         // && the last character was an asterisk, set is_comment multiline
         // to false
-        if (state->curr_sign == 4 && state->hold_comment && state->last_char == '*') {
+        if (state->curr_sign == Token::FORWARD_SLASH && state->hold_comment && state->last_char == '*') {
             state->is_comment = false;
             state->is_multiline_comment = false;
         } else if (state->hold_comment) {
@@ -83,19 +71,19 @@ void Parser::in_comment() {
 
         // If the current character is a newline && we are not in a multiline comment,
         // set is_comment to false
-        if (state->curr_sign == 6 && !state->is_multiline_comment) {
+        if (state->curr_sign == Token::NEWLINE && !state->is_multiline_comment) {
             state->is_comment = false;
         }
 
         // If the current character is an asterisk && we are in a multiline comment,
         // set hold comment to true
-        if (state->curr_sign == 5 && state->is_multiline_comment) {
+        if (state->curr_sign == Token::ASTERISK && state->is_multiline_comment) {
             state->hold_comment = true;
         }
 
         // If the character is an asterisk && we are in a comment,
         // set hold comment to true
-        if (state->curr_sign == 5 && state->is_comment && !state->hold_comment) {
+        if (state->curr_sign == Token::ASTERISK && state->is_comment && !state->hold_comment) {
             state->hold_comment = true;
         }
     }
@@ -106,10 +94,10 @@ void Parser::find_comment_marker() {
         // If the character is an asterisk, we are in hold comment mode
         // && the last character was a forward slash, set is_comment multiline
         // to true
-        if (state->curr_sign == 5 && state->hold_comment && state->last_char == '/') {
+        if (state->curr_sign == Token::ASTERISK && state->hold_comment && state->last_char == '/') {
             state->is_comment = true;
             state->is_multiline_comment = true;
-        } else  if (state->curr_sign == 4 && state->hold_comment && state->last_char == '/') {
+        } else  if (state->curr_sign == Token::FORWARD_SLASH && state->hold_comment && state->last_char == '/') {
             // If the character is a forward slash, we are in hold comment mode
             // && the last character was a forward slash, set is_comment to true
             state->is_comment = true;
@@ -120,7 +108,7 @@ void Parser::find_comment_marker() {
     }
 
     // If the character is a forward slash, set hold comment to true
-    if (state->curr_sign == 4 && !state->hold_comment) {
+    if (state->curr_sign == Token::FORWARD_SLASH && !state->hold_comment) {
         state->hold_comment = true;
     }
 }
@@ -130,7 +118,6 @@ bool Parser::is_rule_or_selector() {
     // current character is not a whitespace
     if (
         state->expecting_rule_or_selector &&
-        // state->curr_sign == 0
         !Utils::is_whitespace(state->curr_char)
     ) {
         state->selectors.emplace_back("");
@@ -154,7 +141,7 @@ bool Parser::is_rule_or_selector() {
 bool Parser::is_opening_brace() {
     // If the character is an opening brace, capture all the characters until the closing brace
     // Discard it if its preceded by # (interpolation)
-    if (state->curr_sign == 1 && state->last_char != '#') {
+    if (state->curr_sign == Token::OPEN_BRACE && state->last_char != '#') {
         state->capturing_block = true;
         // Set getting selector to false to denote that we are now getting the content
         state->getting_selector = false;
@@ -172,7 +159,7 @@ bool Parser::is_opening_brace() {
 void Parser::push_to_selector() {
     state->selectors.back() += state->curr_char;
 
-    if (state->curr_sign == 7) {
+    if (state->curr_sign == Token::SEMICOLON) {
         state->getting_selector = false;
         state->expecting_rule_or_selector = true;
         state->content.emplace_back("");
@@ -181,12 +168,12 @@ void Parser::push_to_selector() {
 
 int Parser::check_capture_level() {
     // If the character is an opening brace, increment level by one
-    if (state->curr_sign == 1 && !state->is_comment) {
+    if (state->curr_sign == Token::OPEN_BRACE && !state->is_comment) {
         state->levels++;
     }
 
     // If the character is a closing brace, decrement level by one
-    if (state->curr_sign == 2 && !state->is_comment) {
+    if (state->curr_sign == Token::CLOSE_BRACE && !state->is_comment) {
         state->levels--;
     }
 

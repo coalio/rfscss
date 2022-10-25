@@ -64,7 +64,7 @@ bash build.sh --build-install
 
 ```
 
-`build.sh` also provides other utilities, for example:
+`build.sh` also does other operations, for example:
 
 ```
 # Assumes you already built the binary and you only want to install it
@@ -72,9 +72,6 @@ bash build.sh -i
 
 # Only builds the binary
 bash build.sh
-
-# Runs tests
-bash build.sh --test
 ```
 
 Of course, `build.sh` always assumes you're running it from the `/build` directory.
