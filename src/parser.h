@@ -2,6 +2,18 @@
 #include "state.h"
 #include "debug.h"
 
+enum Token {
+    UNKNOWN = -1,
+    DOT = 0,
+    OPEN_BRACE = 1,
+    CLOSE_BRACE = 2,
+    WHITESPACE = 3,
+    FORWARD_SLASH = 4,
+    ASTERISK = 5,
+    NEWLINE = 6,
+    SEMICOLON = 7
+};
+
 class Parser {
 private:
     // The state of the parser
@@ -12,7 +24,7 @@ public:
         LOG("Creating new parser using state: " << _state->curr_pos);
     }
 
-    int8_t check_char(char c);
+    Token check_char(char c);
 
     // Moves to the next char. This also increments the current
     // char cursor. Does not deal with lines/columns counters

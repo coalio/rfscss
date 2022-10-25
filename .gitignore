@@ -5,6 +5,7 @@ CMakeFiles
 Makefile
 libsrc.a
 .vscode
+Session.vim
 build/*
 tests/*
 !tests/build.*
