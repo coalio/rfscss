@@ -26,8 +26,6 @@ Example usage:
 curl https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css | rfscss -p -i ".nav%->bootstrap-nav.css"
 ```
 
-There is a detailed guide available at <a href="https://tabe.me/blog/refactor-large-scss-into-multiple-files">this article</a>
-
 If you run rfscss without arguments, the following information will be shown:
 
 ```
